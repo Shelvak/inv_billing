@@ -3,19 +3,18 @@
 - Script para generar planillas MV-0x del Instituto Nacional de Vitivinicultura.
 - Se diferenciaran por carpetas y nombres de inscriptos
 
-```
-  $HOME/planillas/abril-2013/Bodega-buena-onda.csv
-``` 
+==== Ejemplo
 
-```
+  $HOME/planillas/abril-2013/Bodega-buena-onda.csv
+Mostrará:
+
   Facturación para BODEGA-BUENA-ONDA de ABRIL 2013
 
   109 mv-05 Intervención  -Sin problemas-  0zz-xxxxxxxxx-2013 $ 50,00
   108 mv-05 Certificación 10 Lts           0zz-xxxxxxxxx-2013 $ 50,00
 
-Total: $ 100,00
-	      
-```
+  Total: $ 100,00
+
 
 
 == (The MIT License)
