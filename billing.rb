@@ -49,7 +49,7 @@ CSV.open('rock.csv', 'w') do |csv|
       cod_detail = CODIGOS[cod]
       cod_description = [cod, cod_detail[:desc]].join(' - ')
       nro_pedido = [column['coddel'], column['numero'], column['anoinv']].join('-')
-      precio1, precio2 = cod_detail[:precio1], cod_detail[:precio2]
+      precio = cod_detail[:price]
 
       csv << [
         '   ',
@@ -57,8 +57,7 @@ CSV.open('rock.csv', 'w') do |csv|
         nro_pedido,
         vol,
         '$',
-        precio1,
-        precio2
+        precio
       ]
     end                                                                   
 	end
