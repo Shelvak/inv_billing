@@ -3,9 +3,14 @@
 - Script para generar planillas MV-0x del Instituto Nacional de Vitivinicultura.
 - Se diferenciaran por carpetas y nombres de inscriptos
 
+== Instalando
+
+  gem install pg -v 0.11.0
+  gem install activesupport
+
 ==== Ejemplo
 
-  $HOME/planillas/abril-2013/Bodega-buena-onda.csv
+  $HOME/planillas/2013/abril/Bodega-buena-onda/mv05.csv
 Mostrará:
 
   Facturación para BODEGA-BUENA-ONDA de ABRIL 2013
