@@ -1,4 +1,6 @@
-class MV05
+# encoding: utf-8
+
+class Exportation
   def self.generate(db_conn)
     date_today = Date.today.to_s
 
@@ -6,7 +8,7 @@ class MV05
       date = Date.today.beginning_of_month.advance(months: n)
       year = date.year
       month = MONTHS[date.month]
-  
+
       begin
         Dir.mkdir year.to_s
       rescue
@@ -18,45 +20,44 @@ class MV05
       rescue
         puts 'Ya existe'
       end
-
+  
       month_directory = [year, month].join('/')
       nro_inscripto = ' '
       owner_directory = nil
-      tipo = nil
+      tipo = ''
 
-      db_conn.exec("SELECT tipo_movi, nroins, numero, coddel, anoinv FROM mv05cab 
+      db_conn.exec("SELECT paisdest, estdep, numero, coddel, anoinv FROM expcab1
                     WHERE fecpre BETWEEN '#{date}' AND '#{date.advance(months: 1, days: -1)}'
                     AND numero != '0'
-                    ORDER BY nroins, tipo_movi") do |columns|
-
+                    ORDER BY estdep, paisdest") do |columns|
 
         columns.each do |column|
           begin
-            if nro_inscripto != column['nroins']
+            if nro_inscripto != column['estdep']
+              nro_inscripto = column['estdep']
               owner = db_conn.exec(
-                "SELECT nombre FROM inscriptos WHERE nroins = '#{column['nroins']}'"
+                "SELECT nombre FROM inscriptos WHERE nroins = '#{column['estdep']}'"
               ).first['nombre'].to_s
 
               owner_name = delete_innecesary_spaces(owner)
               owner_directory = [month_directory, owner_name].join('/')
+              owner_directory
               Dir.mkdir owner_directory
 
-              CSV.open("#{owner_directory}/mv05.csv", 'ab') do |csv|
+              CSV.open("#{owner_directory}/exportacion.csv", 'ab') do |csv|
                 3.times { csv << [] }
                 csv << [ '  ', "Tramites para #{owner_name.upcase}" ]
                 2.times { csv << [] }
               end
             end
-
-            nro_inscripto = column['nroins']
           rescue
             puts 'No se pudo conseguir el inscripto'
           end
 
-          CSV.open("#{owner_directory}/mv05.csv", 'ab') do |csv|
-            code = column['tipo_movi']
-            code_detail = CODIGOS[code]
-            code_detail ||= { desc: 'Desconocido', price: '0' }
+          CSV.open("#{owner_directory}/exportacion.csv", 'ab') do |csv|
+            code = column['paisdest']
+            country = COUNTRIES[code.to_i]
+            country ||= code
 
             if tipo != code
               csv << [] 
@@ -64,21 +65,13 @@ class MV05
               tipo = code
             end
 
-            volumen = begin
-              db_conn.exec(
-                "SELECT volume FROM mv05origfino WHERE nro_doc = #{column['numero']}"
-              ).first
-            rescue
-              puts 'Sin volumen'
-            end
-
             csv << [
               '   ',
-              [code, code_detail[:desc]].join(' - '),
+              'Presenta guia de exportación',
               [column['coddel'], column['numero'], column['anoinv']].join('-'),
-              (volumen ? "P/ #{volumen['volume']} L" : ''),
+              country,
               '$',
-              code_detail[:price]
+              180
             ]
           end                                                                   
         end                                                                   
