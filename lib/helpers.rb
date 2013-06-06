@@ -1,8 +1,8 @@
 class Helpers
   class << self
-    def create_csv_for(owner, month_directory)
+    def create_csv_for(owner)
       owner_name = delete_innecesary_spaces(owner)
-      @@owner_file = "#{month_directory}/#{owner_name}.csv"
+      @@owner_file = "#{$month_directory}/#{owner_name}.csv"
                 
       unless File.exists? @@owner_file
         CSV.open(@@owner_file, 'ab') do |csv|
@@ -16,6 +16,12 @@ class Helpers
     def add_to_csv(contents)
       CSV.open(@@owner_file, 'ab') do |csv|
         contents.each { |c| csv << c }
+      end
+    end
+
+    def add_date_to_csv
+      CSV.open(@@owner_file, 'ab') do |csv|
+        csv << [Date.today.to_s.split('-').reverse.join('-')]
       end
     end
 
@@ -36,6 +42,59 @@ class Helpers
         $db_conn.exec(query)
       rescue => e
         log_error e
+      end
+    end
+
+    def create_month_dir
+      date = Date.today
+
+      if date.day >= 27
+        next_month = date.next_month
+        year = next_month.year
+        month = [next_month.month, MONTHS[next_month.month]].join(' ')
+      else
+        year = date.year
+        month = [date.month, MONTHS[date.month]].join(' ')
+      end
+
+      $month_directory = "../#{year}/#{month}"
+      Helpers.mkdir "../#{year}"
+      Helpers.mkdir $month_directory
+    end
+
+    def read_last_record_of_each_table
+      CSV.read('last_records.csv').each { |key, value| $last_ids[key] = value }
+    end
+
+    def save_last_record_of_each_table
+      CSV.open('last_records.csv', 'w') do |csv|
+        $last_ids.each { |key, value| csv << [key, value] }
+      end
+    end
+
+    def do_sum_in_all_files
+      today = Date.today.to_s.split('-').reverse.join('-')
+      Dir.glob("#{$month_directory}/*.csv").each do |file|
+        total_global = total_propio = total_tercero = 0
+
+        CSV.read(file).each do |csv| 
+          total_global += csv[5].to_i
+
+          if csv[6] =~ /tercero/i
+            total_tercero += csv[5].to_i
+          else
+            total_propio += csv[5].to_i 
+          end
+        end
+
+        totals = [total_global, total_propio, total_tercero].join('/')
+
+        CSV.open(file, 'ab') do |csv| 
+          csv << []
+          csv << [
+            today, "Total/propio/tercero => $ #{totals}"
+          ]
+        end
       end
     end
   end

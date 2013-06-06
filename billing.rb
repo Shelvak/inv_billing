@@ -17,6 +17,16 @@ $db_conn = PGconn.connect(
   dbname: 'Bodegas', user: 'postgres', password: 'postgres'
 )
 
-# Generate the informs
+## Initializers
+Helpers.create_month_dir
+$last_ids = {} # { table: id }
+Helpers.read_last_record_of_each_table
+
+## Generate the informs
+MV02.generate
 MV05.generate
 Exportation.generate
+
+## Finalizers ^^
+Helpers.save_last_record_of_each_table
+Helpers.do_sum_in_all_files
