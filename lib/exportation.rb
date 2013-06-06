@@ -29,7 +29,7 @@ class Exportation
 
             Helpers.create_csv_for(owner, month_directory)
           rescue => e
-            Helpers.log_error(e)
+            Helpers.log_error e
           end
 
           content_for_csv = []

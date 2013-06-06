@@ -13,7 +13,7 @@ class MV05
 
       tipo = nil
 
-      db_conn.exec("SELECT tipo_movi, nroins, numero, coddel, anoinv FROM mv05cab 
+      db_conn.exec("SELECT idform, tipo_movi, nroins, numero, coddel, anoinv FROM mv05cab 
                     WHERE fecpre BETWEEN '#{date}' AND '#{date.advance(months: 1, days: -1)}'
                     AND numero != '0'
                     ORDER BY nroins, tipo_movi") do |columns|
@@ -28,8 +28,7 @@ class MV05
 
             Helpers.create_csv_for(owner, month_directory)
           rescue => e
-            puts e
-            Helpers.log_error(e)
+            Helpers.log_error e
           end
 
           content_for_csv = []
@@ -43,22 +42,63 @@ class MV05
             tipo = code
           end
 
-          volumen = begin
-            db_conn.exec(
-              "SELECT volume FROM mv05origfino 
-               WHERE nro_doc = #{column['numero']}"
-            ).first
-          rescue Exception => e
-            puts e
+          volumen, propierty = 0, ' '
+
+          begin
+            detail = db_conn.exec(
+              "SELECT volume, propiedad FROM mv05det
+               WHERE disaum = 'A'
+               AND idform = #{column['idform']}"
+            )
+
+            propierty = 'Tercero' if detail.first['propiedad'].to_i == 2
+            detail.each { |d| volumen += d['volume'].to_i }
+          rescue => e
+            Helpers.log_error e
+          end
+
+          if volumen == 0
+            begin
+              volumen = db_conn.exec(
+                "SELECT sum(volume) FROM mv05origfino
+                 WHERE idform = #{column['idform']}"
+              ).first['count']
+            rescue => e
+              Helpers.log_error e
+            end
+          end
+
+          if volumen == 0
+            begin
+              volumen = db_conn.exec(
+                "SELECT sum(volumen) FROM mv05cove103
+                 WHERE idform = #{column['idform']}"
+              ).first['count']
+            rescue => e
+              Helpers.log_error e
+            end
+          end
+
+          if volumen == 0
+            begin
+              volumen = db_conn.exec(
+                "SELECT sum(volumen) FROM mv05terc
+                 WHERE disaum = 'A' AND idform = #{column['idform']}"
+              ).first['count']
+              propierty = 'Tercero'
+            rescue => e
+              Helpers.log_error e
+            end
           end
 
           content_for_csv << [
             '   ',
             [code, code_detail[:desc]].join(' - '),
             [column['coddel'], column['numero'], column['anoinv']].join('-'),
-            (volumen ? "P/ #{volumen['volume']} L" : ''),
+            "P/ #{volumen} L",
             '$',
-            code_detail[:price]
+            code_detail[:price],
+            propierty
           ]
 
           Helpers.add_to_csv(content_for_csv)

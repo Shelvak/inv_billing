@@ -22,15 +22,13 @@ class Helpers
     def mkdir(dir)
       begin
         Dir.mkdir dir
-      rescue
-        puts 'Ya existe'
+      rescue => e
+        log_error e
       end
     end
 
     def log_error(error)
-      CSV.open('error.csv', 'ab') do |csv|
-        csv << [error]
-      end
+      %x{echo "#{error}" >> errores}
     end
   end
 
