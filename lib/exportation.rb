@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 class Exportation
-  def self.generate(db_conn)
+  def self.generate
     date_today = Date.today.to_s
 
     [-3, -2, -1].each do |n|
@@ -15,14 +15,14 @@ class Exportation
   
       tipo = nil
 
-      db_conn.exec("SELECT paisdest, estdep, numero, coddel, anoinv FROM expcab1
+      $db_conn.exec("SELECT paisdest, estdep, numero, coddel, anoinv FROM expcab1
                     WHERE fecpre BETWEEN '#{date}' AND '#{date.advance(months: 1, days: -1)}'
                     AND numero != '0'
                     ORDER BY estdep, paisdest") do |columns|
 
         columns.each do |column|
           begin
-            owner = db_conn.exec(
+            owner = $db_conn.exec(
               "SELECT nombre FROM inscriptos 
               WHERE nroins = '#{column['estdep']}'"
             ).first['nombre']

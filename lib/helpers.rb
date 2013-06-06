@@ -7,7 +7,7 @@ class Helpers
       unless File.exists? @@owner_file
         CSV.open(@@owner_file, 'ab') do |csv|
           3.times { csv << [] }
-          csv << [ '  ', "Tramites para #{owner.upcase}" ]
+          csv << [ '  ', "Tramites para #{owner_name.upcase}" ]
           2.times { csv << [] }
         end
       end
@@ -29,6 +29,14 @@ class Helpers
 
     def log_error(error)
       %x{echo "#{error}" >> errores}
+    end
+
+    def execute_sql(query)
+      begin
+        $db_conn.exec(query)
+      rescue => e
+        log_error e
+      end
     end
   end
 

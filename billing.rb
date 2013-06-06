@@ -13,10 +13,10 @@ end
 require 'active_support/core_ext/date/calculations.rb'
 
 ## DB connection
-db_conn = PGconn.connect(
+$db_conn = PGconn.connect(
   dbname: 'Bodegas', user: 'postgres', password: 'postgres'
 )
 
 # Generate the informs
-MV05.generate(db_conn)
-Exportation.generate(db_conn)
+MV05.generate
+Exportation.generate
