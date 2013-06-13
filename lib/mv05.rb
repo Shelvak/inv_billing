@@ -5,7 +5,7 @@ class MV05
     $db_conn.exec(
       "SELECT idform, tipo_movi, nroins, numero, coddel, anoinv FROM mv05cab 
        WHERE idform > #{$last_ids['mv05cab'].to_i}
-       and fecpre > '2013-01-01'
+       and fecpre > '2013-03-31'
        AND numero != '0'
        ORDER BY idform, nroins, tipo_movi"
     ) do |columns|
