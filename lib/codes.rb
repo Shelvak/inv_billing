@@ -3,6 +3,8 @@
 CODIGOS = {
   'MV02-I'  => { desc: 'mv-02 Inicio traslado', price: 120 },
   'MV02-F'  => { desc: 'mv-02 Terminación traslado', price: 120 },
+  'frigo-131' => { desc: 'A Frigorifico', price: 100 },
+  'frigo-132' => { desc: 'DE Frigorifico', price: 100 },
   '131'     => { desc: 'Análisis Particular', price: 120 },
   '131t'    => { desc: 'Muestra Exportación (tercero)', price: 200 }, 
   '2005'    => { desc: 'Análisis de Trámite de indentificación', price: 90 }, 
