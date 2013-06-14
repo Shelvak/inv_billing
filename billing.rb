@@ -23,9 +23,9 @@ $last_ids = {} # { table: id }
 Helpers.read_last_record_of_each_table
 
 ## Generate the informs
-#MV02.generate
-#MV05.generate
-#Exportation.generate
+MV02.generate
+MV05.generate
+Exportation.generate
 Frigorifico.generate
 
 ## Finalizers ^^
