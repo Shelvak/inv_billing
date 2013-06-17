@@ -6,7 +6,7 @@ class MV02
       "SELECT idform, nrorem, lts_rem_t, lts_rem_p, lts_rec_t, lts_rec_p,
         estadocu, numero, coddel, anoinv FROM mv02cab 
         WHERE idform > #{$last_ids['mv02cab'].to_i}
-        and fecinicio > '2013-03-31'
+        AND fecinicio >= '2013-03-27'
         AND numero != '0'
         AND estadecla = 'AL'
         ORDER BY idform, nrorem, nrorec"
