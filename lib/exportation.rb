@@ -7,7 +7,7 @@ class Exportation
     $db_conn.exec(
       "SELECT idform, paisdest, estdep, numero, coddel, anoinv FROM expcab1
        WHERE idform > #{$last_ids['expcab1'].to_i}
-       AND fecpre >= '2013-03-27'
+       AND fecpre >= '2013-06-27'
        AND numero != '0'
        ORDER BY idform, estdep, paisdest"
     ) do |columns|

@@ -7,7 +7,7 @@ class Frigorifico
             idform, codform, tipo_movi, nroins, estadecla, numero, coddel, anoinv 
           FROM #{fr}cab
           WHERE idform > #{$last_ids[fr].to_i}
-          AND fechapres >= '2013-03-27'
+          AND fechapres >= '2013-06-27'
           AND numero != '0'
           AND estadecla = 'AL'
           ORDER BY nroins"

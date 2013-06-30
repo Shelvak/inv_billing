@@ -91,9 +91,9 @@ class Helpers
 
         CSV.open(file, 'ab') do |csv| 
           csv << []
-          csv << [
-            today, "Total/propio/tercero => $ #{totals}"
-          ]
+          csv << [today, "Total => $ #{total_global}"]
+          csv << [today, "Propio => $ #{total_propio}"]
+          csv << [today, "Tercero => $ #{total_tercero}"]
         end
       end
     end
