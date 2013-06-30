@@ -57,8 +57,8 @@ class Helpers
         month = [date.month, MONTHS[date.month]].join(' ')
       end
 
-      $month_directory = "../#{year}/#{month}"
-      Helpers.mkdir "../#{year}"
+      $month_directory = "F:/Planillas/#{year}/#{month}"
+      Helpers.mkdir "F:/Planillas/#{year}"
       Helpers.mkdir $month_directory
     end
 
