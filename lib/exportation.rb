@@ -16,7 +16,8 @@ class Exportation
         owner = Helpers.execute_sql(
           "SELECT nombre FROM inscriptos 
           WHERE nroins = '#{column['estdep']}'"
-        ).first['nombre']
+        ).first
+        owner = owner ? owner['nombre'] : 'desconocido'
 
         Helpers.create_csv_for(owner)
         Helpers.add_date_to_csv if owner != old_owner

@@ -3,8 +3,7 @@ class Frigorifico
     old_owner = ''
     ['mvfr', 'mvfrch'].each do |fr|
       $db_conn.exec(
-        "SELECT 
-            idform, codform, tipo_movi, nroins, estadecla, numero, coddel, anoinv 
+        "SELECT  idform, codform, tipo_movi, nroins, numero, coddel, anoinv 
           FROM #{fr}cab
           WHERE idform > #{$last_ids[fr].to_i}
           AND fechapres >= '2013-06-27'
@@ -18,7 +17,7 @@ class Frigorifico
             "SELECT nombre FROM inscriptos 
              WHERE nroins = '#{column['nroins']}'"
           ).first
-          owner = owner ? owner['nombre'] : old_owner
+          owner = owner ? owner['nombre'] : 'desconocido'
         
           Helpers.create_csv_for(owner)
           Helpers.add_date_to_csv if owner != old_owner

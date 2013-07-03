@@ -14,7 +14,9 @@ class MV05
         owner = Helpers.execute_sql(
           "SELECT nombre FROM inscriptos 
            WHERE nroins = '#{column['nroins']}'"
-        ).first['nombre']
+        ).first
+
+        owner = owner ? owner['nombre'] : 'desconocido'
 
         Helpers.create_csv_for(owner)
         Helpers.add_date_to_csv if owner != old_owner
