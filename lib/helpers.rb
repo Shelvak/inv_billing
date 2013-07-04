@@ -57,8 +57,8 @@ class Helpers
         month = [date.month, MONTHS[date.month]].join(' ')
       end
 
-      $month_directory = "F:/Planillas/#{year}/#{month}"
-      Helpers.mkdir "F:/Planillas/#{year}"
+      $month_directory = "E:/Planillas/#{year}/#{month}"
+      Helpers.mkdir "E:/Planillas/#{year}"
       Helpers.mkdir $month_directory
     end
 
@@ -77,23 +77,29 @@ class Helpers
       Dir.glob("#{$month_directory}/*.csv").each do |file|
         total_global = total_propio = total_tercero = 0
 
-        CSV.read(file).each do |csv| 
-          total_global += csv[5].to_i
+        csv_file = CSV.read(file)
+        rows_number = csv_file.size - 1
 
-          if csv[6] =~ /tercero/i
-            total_tercero += csv[5].to_i
-          else
-            total_propio += csv[5].to_i 
+        unless csv_file[rows_number][1].match(/tercero =>/i)
+          
+          csv_file.each do |csv| 
+            total_global += csv[5].to_i
+
+            if csv[6] =~ /tercero/i
+              total_tercero += csv[5].to_i
+            else
+              total_propio += csv[5].to_i 
+            end
           end
-        end
 
-        totals = [total_global, total_propio, total_tercero].join('/')
+          totals = [total_global, total_propio, total_tercero].join('/')
 
-        CSV.open(file, 'ab') do |csv| 
-          csv << []
-          csv << [today, "Total => $ #{total_global}"]
-          csv << [today, "Propio => $ #{total_propio}"]
-          csv << [today, "Tercero => $ #{total_tercero}"]
+          CSV.open(file, 'ab') do |csv| 
+            csv << []
+            csv << [today, "Total => $ #{total_global}"]
+            csv << [today, "Propio => $ #{total_propio}"]
+            csv << [today, "Tercero => $ #{total_tercero}"]
+          end
         end
       end
     end
