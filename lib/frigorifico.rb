@@ -53,7 +53,8 @@ class Frigorifico
             [column['coddel'], column['numero'], column['anoinv']].join('-'),
             "P/ #{volumen} L",
             '$',
-            code_detail[:price]
+            code_detail[:price],
+            propierty
           ]
 
           Helpers.add_to_csv(content_for_csv)
