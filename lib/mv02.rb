@@ -38,6 +38,13 @@ class MV02
                     ]
                   end
 
+        owner_propierty = Helpers.execute_sql(
+          " SELECT rsocial FROM mv05terc 
+            WHERE idform = #{column['idform']} "
+        )
+
+        owner_propierty = owner_propierty ? owner_propierty.first['rsocial'] : '  '
+
         code_detail = CODIGOS["MV02-#{column['estadocu']}"]
 
         content_for_csv << [
@@ -47,7 +54,8 @@ class MV02
           "P/ #{volumen} L",
           '$',
           code_detail[:price],
-          prop
+          prop,
+          owner_propierty
         ]
 
         Helpers.add_to_csv(content_for_csv)

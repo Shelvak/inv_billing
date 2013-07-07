@@ -26,6 +26,13 @@ class Frigorifico
           content_for_csv = []
           volumen, propierty = 0, ' '
 
+          owner_propierty = Helpers.execute_sql(
+            " SELECT rsocial FROM mvfrigterc 
+              WHERE idform = #{column['idform']} "
+          )
+
+          owner_propierty = owner_propierty ? owner_propierty.first['rsocial'] : '  '
+
           query = Helpers.execute_sql(
             " SELECT litros, propiedad FROM #{fr}det
               WHERE idform = #{column['idform']}"
@@ -54,7 +61,8 @@ class Frigorifico
             "P/ #{volumen} L",
             '$',
             code_detail[:price],
-            propierty
+            propierty,
+            owner_propierty
           ]
 
           Helpers.add_to_csv(content_for_csv)
