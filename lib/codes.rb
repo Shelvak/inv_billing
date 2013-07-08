@@ -1,8 +1,10 @@
 # encoding: UTF-8
 
 CODIGOS = {
-  'MV02-I'  => { desc: 'mv-02 Inicio traslado', price: 170 }, #Terceros 200
-  'MV02-F'  => { desc: 'mv-02 Terminación traslado', price: 130 },
+  'mv02-I'  => { desc: 'mv-02 Inicio traslado', price: 170, third_price: 200 },
+  'mv02-F'  => { desc: 'mv-02 Terminación traslado', price: 130 },
+  'mv02ch-I'  => { desc: 'mv-02 Espumante - Inicio traslado', price: 170, third_price: 200 },
+  'mv02ch-F'  => { desc: 'mv-02 Espumante - Terminación traslado', price: 130 },
   'frigo-131' => { desc: 'A Frigorifico', price: 90 },
   'frigo-132' => { desc: 'DE Frigorifico', price: 90 },
   '131'     => { desc: 'Análisis Particular', price: 120 },
