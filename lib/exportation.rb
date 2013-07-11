@@ -28,13 +28,23 @@ class Exportation
         country = COUNTRIES[code.to_i]
         country ||= code
 
+        query = Helpers.execute_sql(
+          "SELECT rsocial FROM expoterc WHERE idform = #{column['idform']}"
+        )
+
+        propierty, owner_propierty = (
+          query ? ['Tercero', query.first['rsocial']] : [nil, nil]
+        )
+
         content_for_csv << [
           '   ',
           'Presenta guía de exportación',
           [column['coddel'], column['numero'], column['anoinv']].join('-'),
           country,
           '$',
-          180
+          180,
+          propierty,
+          owner_propierty
         ]
 
         Helpers.add_to_csv(content_for_csv)
