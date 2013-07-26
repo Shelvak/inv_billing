@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 class Frigorifico
   def self.generate
     old_owner = ''
@@ -31,7 +33,8 @@ class Frigorifico
               WHERE idform = #{column['idform']} "
           )
 
-          owner_propierty = owner_propierty ? owner_propierty.first['rsocial'] : '  '
+          owner_propierty = owner_propierty && owner_propierty.count > 0 ?
+            owner_propierty.first['rsocial'] : '  '
 
           query = Helpers.execute_sql(
             " SELECT litros, propiedad FROM #{fr}det

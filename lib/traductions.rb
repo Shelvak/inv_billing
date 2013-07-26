@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 MONTHS = {
   1 => 'Enero',
   2 => 'Febrero',

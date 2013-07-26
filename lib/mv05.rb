@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 class MV05
   def self.generate
     old_owner = ''
@@ -34,7 +36,8 @@ class MV05
             WHERE idform = #{column['idform']} "
         )
 
-        owner_propierty = owner_propierty ? owner_propierty.first['rsocial'] : '  '
+        owner_propierty = owner_propierty && owner_propierty.count > 0 ? 
+          owner_propierty.first['rsocial'] : '  '
 
         query = Helpers.execute_sql(
           " SELECT volume, propiedad FROM mv05det

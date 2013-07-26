@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 COUNTRIES = {
   101 => 'BURKINA FASO',
   102 => 'ARGELIA',

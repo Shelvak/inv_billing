@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 class MV02
   def self.generate
 
@@ -45,7 +47,8 @@ class MV02
               WHERE idform = #{column['idform']} "
           )
 
-          owner_propierty = owner_propierty ? owner_propierty.first['rsocial'] : '  '
+          owner_propierty = (owner_propierty && owner_propierty.count > 0) ?
+            owner_propierty.first['rsocial'] : '  '
 
           code_detail = CODIGOS["#{mv}-#{column['estadocu']}"]
 
@@ -55,7 +58,7 @@ class MV02
             [column['coddel'], column['numero'], column['anoinv']].join('-'),
             "P/ #{volumen} L",
             '$',
-            (prop.blank? code_detail[:price] : code_detail[:third_price]),
+            (prop.blank? ? code_detail[:price] : code_detail[:third_price]),
             prop,
             owner_propierty
           ]

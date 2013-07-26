@@ -1,8 +1,9 @@
+# encoding: ISO8859-1
 class Helpers
   class << self
     def create_csv_for(owner)
       owner_name = delete_innecesary_spaces(owner)
-      @@owner_file = "#{$month_directory}/#{owner_name}.csv"
+      @@owner_file = "#{$month_directory}/#{owner_name}.csv" #.force_encoding('UTF-8')
                 
       unless File.exists? @@owner_file
         CSV.open(@@owner_file, 'ab') do |csv|
@@ -15,7 +16,7 @@ class Helpers
 
     def add_to_csv(contents)
       CSV.open(@@owner_file, 'ab') do |csv|
-        contents.each { |c| csv << c }
+        contents.each { |c| csv << c.map {|e| e.is_a?(String) ? e.force_encoding('UTF-8') : e} }
       end
     end
 
@@ -85,7 +86,7 @@ class Helpers
           csv_file.each do |csv| 
             total_global += csv[5].to_i
 
-            if csv[6] =~ /tercero/i
+            if csv[6] =~ /\w+/i
               total_tercero += csv[5].to_i
             else
               total_propio += csv[5].to_i 

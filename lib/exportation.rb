@@ -29,12 +29,10 @@ class Exportation
         country ||= code
 
         query = Helpers.execute_sql(
-          "SELECT rsocial FROM expoterc WHERE idform = #{column['idform']}"
+          "SELECT rsocial FROM expoterc WHERE idform = #{column['idform'].to_i}"
         )
 
-        propierty, owner_propierty = (
-          query ? ['Tercero', query.first['rsocial']] : [nil, nil]
-        )
+        owner_propierty = (query && query.count > 0 ? query.first['rsocial'] : '')
 
         content_for_csv << [
           '   ',
@@ -43,7 +41,6 @@ class Exportation
           country,
           '$',
           180,
-          propierty,
           owner_propierty
         ]
 
