@@ -28,14 +28,6 @@ class Frigorifico
           content_for_csv = []
           volumen, propierty = 0, ' '
 
-          owner_propierty = Helpers.execute_sql(
-            " SELECT rsocial FROM mvfrigterc 
-              WHERE idform = #{column['idform']} "
-          )
-
-          owner_propierty = owner_propierty && owner_propierty.count > 0 ?
-            owner_propierty.first['rsocial'] : '  '
-
           query = Helpers.execute_sql(
             " SELECT litros, propiedad FROM #{fr}det
               WHERE idform = #{column['idform']}"
@@ -48,6 +40,16 @@ class Frigorifico
 
             query.each { |d| volumen += d['litros'].to_i }
           end
+
+          owner_propierty = Helpers.execute_sql(
+            " SELECT rsocial FROM mvfrigterc 
+              WHERE idform = #{column['idform']} "
+          )
+
+          if owner_propierty && owner_propierty.count > 0
+            propierty = owner_propierty.first['rsocial']
+          end
+
 
           code_detail = CODIGOS["frigo-#{column['tipo_movi']}"]
           frigo_type = case column['codform'].to_i 
@@ -64,8 +66,7 @@ class Frigorifico
             "P/ #{volumen} L",
             '$',
             code_detail[:price],
-            propierty,
-            owner_propierty
+            propierty
           ]
 
           Helpers.add_to_csv(content_for_csv)

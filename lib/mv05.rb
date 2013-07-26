@@ -31,14 +31,6 @@ class MV05
 
         volumen, propierty = 0, ' '
 
-        owner_propierty = Helpers.execute_sql(
-          " SELECT rsocial FROM mv05terc 
-            WHERE idform = #{column['idform']} "
-        )
-
-        owner_propierty = owner_propierty && owner_propierty.count > 0 ? 
-          owner_propierty.first['rsocial'] : '  '
-
         query = Helpers.execute_sql(
           " SELECT volume, propiedad FROM mv05det
             WHERE disaum = 'A' AND idform = #{column['idform']}"
@@ -80,6 +72,15 @@ class MV05
           propierty = 'Tercero'
         end
 
+        owner_propierty = Helpers.execute_sql(
+          " SELECT rsocial FROM mv05terc 
+            WHERE idform = #{column['idform']} "
+        )
+
+        if owner_propierty && owner_propierty.count > 0
+          propierty = owner_propierty.first['rsocial']
+        end
+
         content_for_csv << [
           '   ',
           [code, code_detail[:desc]].join(' - '),
@@ -87,8 +88,7 @@ class MV05
           "P/ #{volumen} L",
           '$',
           code_detail[:price],
-          propierty,
-          owner_propierty
+          propierty
         ]
 
         Helpers.add_to_csv(content_for_csv)

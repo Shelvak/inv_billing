@@ -30,7 +30,7 @@ class MV02
           old_owner = owner
 
           content_for_csv = []
-          volumen, prop = if column['estadocu'] == 'I'
+          volumen, propierty = if column['estadocu'] == 'I'
                       [
                         column['lts_rem_t'].to_i + column['lts_rem_p'].to_i,
                         (column['lts_rem_t'].to_i == 0 ? '' : 'Tercero')
@@ -47,10 +47,16 @@ class MV02
               WHERE idform = #{column['idform']} "
           )
 
-          owner_propierty = (owner_propierty && owner_propierty.count > 0) ?
-            owner_propierty.first['rsocial'] : '  '
+          if owner_propierty && owner_propierty.count > 0
+            propierty = owner_propierty.first['rsocial']
+          end
 
           code_detail = CODIGOS["#{mv}-#{column['estadocu']}"]
+          price = if propierty.present? && !code_detail[:third_price].nil?
+                    code_detail[:third_price]
+                  else
+                    code_detail[:price] 
+                  end
 
           content_for_csv << [
             '   ',
@@ -58,9 +64,8 @@ class MV02
             [column['coddel'], column['numero'], column['anoinv']].join('-'),
             "P/ #{volumen} L",
             '$',
-            (prop.blank? ? code_detail[:price] : code_detail[:third_price]),
-            prop,
-            owner_propierty
+            price,
+            propierty
           ]
 
           Helpers.add_to_csv(content_for_csv)
