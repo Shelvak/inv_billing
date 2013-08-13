@@ -31,45 +31,42 @@ class MV05
 
         volumen, propierty = 0, ' '
 
-        query = Helpers.execute_sql(
-          " SELECT volume, propiedad FROM mv05det
-            WHERE disaum = 'A' AND idform = #{column['idform']}"
-        )
+        ['A', 'D'].each do |a_d|
+          query = Helpers.execute_sql(
+            " SELECT volume, propiedad FROM mv05det
+              WHERE disaum = '#{a_d}' AND idform = #{column['idform']}"
+          )
 
-        if query
-          if query.try(:first) && query.first['propiedad'].to_i == 2
-            propierty = 'Tercero' 
+          if query && volumen == 0
+            if query.try(:first) && query.first['propiedad'].to_i == 2
+              propierty = 'Tercero' 
+            end
+
+            query.each { |d| volumen += d['volume'].to_i }
           end
-
-          query.each { |d| volumen += d['volume'].to_i }
         end
 
-        if volumen == 0
-          query = Helpers.execute_sql(
-              "SELECT sum(volume) FROM mv05origfino
-               WHERE idform = #{column['idform']}"
-          )
+        ['origfino', 'cove103'].each do |x|
+          if volumen == 0
+            query = Helpers.execute_sql(
+                "SELECT sum(volume) FROM mv05#{x}
+                 WHERE idform = #{column['idform']}"
+            )
 
-          volumen = query.first['count'] if query
+            volumen = query.first['count'] if query
+          end
         end
 
-        if volumen == 0
-          query = Helpers.execute_sql(
-              "SELECT sum(volumen) FROM mv05cove103
-               WHERE idform = #{column['idform']}"
-          )
+        ['A', 'D'].each do |a_d|
+          if volumen == 0
+            query = Helpers.execute_sql(
+              "SELECT sum(volumen) FROM mv05terc
+               WHERE disaum = '#{a_d}' AND idform = #{column['idform']}"
+            )
 
-          volumen = query.first['count'] if query
-        end
-
-        if volumen == 0
-          query = Helpers.execute_sql(
-            "SELECT sum(volumen) FROM mv05terc
-             WHERE disaum = 'A' AND idform = #{column['idform']}"
-          )
-
-          volumen = query.first['count'] if query
-          propierty = 'Tercero'
+            volumen = query.first['count'] if query
+            propierty = 'Tercero'
+          end
         end
 
         owner_propierty = Helpers.execute_sql(
