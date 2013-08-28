@@ -59,7 +59,7 @@ class Frigorifico
                          '----'
                        end
           
-          status = column['estadecla'] == 'AL' ? column['estadecla'] : ''
+          status = return_status_by_code(column['estadecla'])
 
           content_for_csv << [
             '   ',

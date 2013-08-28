@@ -1,4 +1,11 @@
 # encoding: utf-8
+#
+STATUS_CODES = {
+  'AF' => 'Alta fuera de termino',
+  'AN' => 'Anulación',
+  'RE' => 'Rectificado expontaneo',
+  'RR' => 'Rectificado requerido'
+}
 
 MONTHS = {
   1 => 'Enero',

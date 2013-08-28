@@ -34,7 +34,7 @@ class Exportation
 
         owner_propierty = (query && query.count > 0 ? query.first['rsocial'] : '')
 
-        status = column['estadecla'] == 'AL' ? column['estadecla'] : ''
+        status = return_status_by_code(column['estadecla'])
 
         content_for_csv << [
           '   ',

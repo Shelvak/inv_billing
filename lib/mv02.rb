@@ -58,7 +58,7 @@ class MV02
                     code_detail[:price] 
                   end
 
-          status = column['estadecla'] == 'AL' ? column['estadecla'] : ''
+          status = return_status_by_code(column['estadecla'])
 
           content_for_csv << [
             '   ',

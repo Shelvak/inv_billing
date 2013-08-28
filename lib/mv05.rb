@@ -78,7 +78,7 @@ class MV05
           propierty = owner_propierty.first['rsocial']
         end
 
-        status = column['estadecla'] == 'AL' ? column['estadecla'] : ''
+        status = return_status_by_code(column['estadecla'])
 
         content_for_csv << [
           '   ',

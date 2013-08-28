@@ -106,6 +106,18 @@ class Helpers
     end
   end
 
+  def return_status_by_code(status)
+    if status != 'AL'
+      if STATUS_CODES.keys.include?(status)
+        STATUS_CODES[status]
+      else
+        'Tipo desconocido'
+      end
+    else
+      ''
+    end 
+  end
+
   private
 
   def self.delete_innecesary_spaces(string)
