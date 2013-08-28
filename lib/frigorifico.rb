@@ -58,6 +58,8 @@ class Frigorifico
                        else
                          '----'
                        end
+          
+          status = column['estadecla'] == 'AL' ? column['estadecla'] : ''
 
           content_for_csv << [
             '   ',
@@ -66,7 +68,8 @@ class Frigorifico
             "P/ #{volumen} L",
             '$',
             code_detail[:price],
-            propierty
+            propierty,
+            status
           ]
 
           Helpers.add_to_csv(content_for_csv)

@@ -58,6 +58,8 @@ class MV02
                     code_detail[:price] 
                   end
 
+          status = column['estadecla'] == 'AL' ? column['estadecla'] : ''
+
           content_for_csv << [
             '   ',
             code_detail[:desc],
@@ -65,7 +67,8 @@ class MV02
             "P/ #{volumen} L",
             '$',
             price,
-            propierty
+            propierty,
+            status
           ]
 
           Helpers.add_to_csv(content_for_csv)

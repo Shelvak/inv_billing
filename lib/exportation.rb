@@ -34,6 +34,8 @@ class Exportation
 
         owner_propierty = (query && query.count > 0 ? query.first['rsocial'] : '')
 
+        status = column['estadecla'] == 'AL' ? column['estadecla'] : ''
+
         content_for_csv << [
           '   ',
           'Presenta guía de exportación',
@@ -41,7 +43,8 @@ class Exportation
           country,
           '$',
           180,
-          owner_propierty
+          owner_propierty,
+          status
         ]
 
         Helpers.add_to_csv(content_for_csv)
