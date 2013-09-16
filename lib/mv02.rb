@@ -65,7 +65,7 @@ class MV02
             '$',
             price,
             propierty,
-            return_status_by_code(column['estadecla'])
+            Helpers.return_status_by_code(column['estadecla'])
           ]
 
           Helpers.add_to_csv(content_for_csv)
