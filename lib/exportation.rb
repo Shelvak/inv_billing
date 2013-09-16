@@ -7,7 +7,7 @@ class Exportation
     $db_conn.exec(
       "SELECT idform, paisdest, estdep, numero, coddel, anoinv FROM expcab1
        WHERE idform > #{$last_ids['expcab1'].to_i}
-       AND fecpre >= '2013-06-27'
+       AND fecpre >= '2013-08-27'
        AND numero != '0'
        ORDER BY idform, estdep, paisdest"
     ) do |columns|
@@ -34,8 +34,6 @@ class Exportation
 
         owner_propierty = (query && query.count > 0 ? query.first['rsocial'] : '')
 
-        status = return_status_by_code(column['estadecla'])
-
         content_for_csv << [
           '   ',
           'Presenta guía de exportación',
@@ -43,8 +41,7 @@ class Exportation
           country,
           '$',
           180,
-          owner_propierty,
-          status
+          owner_propierty
         ]
 
         Helpers.add_to_csv(content_for_csv)

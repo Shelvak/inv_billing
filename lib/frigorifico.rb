@@ -8,9 +8,8 @@ class Frigorifico
         "SELECT  idform, codform, tipo_movi, nroins, numero, coddel, anoinv 
           FROM #{fr}cab
           WHERE idform > #{$last_ids[fr].to_i}
-          AND fechapres >= '2013-06-27'
+          AND fechapres >= '2013-08-27'
           AND numero != '0'
-          AND estadecla = 'AL'
           ORDER BY nroins"
       ) do |columns|
 
@@ -58,8 +57,6 @@ class Frigorifico
                        else
                          '----'
                        end
-          
-          status = return_status_by_code(column['estadecla'])
 
           content_for_csv << [
             '   ',
@@ -69,7 +66,7 @@ class Frigorifico
             '$',
             code_detail[:price],
             propierty,
-            status
+            return_status_by_code(column['estadecla'])
           ]
 
           Helpers.add_to_csv(content_for_csv)

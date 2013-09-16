@@ -7,7 +7,7 @@ class MV05
     $db_conn.exec(
       "SELECT idform, tipo_movi, nroins, numero, coddel, anoinv FROM mv05cab 
        WHERE idform > #{$last_ids['mv05cab'].to_i}
-       AND fecpre >= '2013-06-27'
+       AND fecpre >= '2013-08-27'
        AND numero != '0'
        ORDER BY idform, nroins, tipo_movi"
     ) do |columns|
@@ -78,8 +78,6 @@ class MV05
           propierty = owner_propierty.first['rsocial']
         end
 
-        status = return_status_by_code(column['estadecla'])
-
         content_for_csv << [
           '   ',
           [code, code_detail[:desc]].join(' - '),
@@ -88,7 +86,7 @@ class MV05
           '$',
           code_detail[:price],
           propierty,
-          status
+          return_status_by_code(column['estadecla'])
         ]
 
         Helpers.add_to_csv(content_for_csv)

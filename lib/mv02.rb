@@ -11,9 +11,8 @@ class MV02
           lts_rem_t, lts_rem_p, lts_rec_t, lts_rec_p,
           estadocu, numero, coddel, anoinv FROM #{mv}cab 
           WHERE idform > #{$last_ids["#{mv}cab"].to_i}
-          AND fecinicio >= '2013-06-27'
+          AND fecinicio >= '2013-08-27'
           AND numero != '0'
-          AND estadecla = 'AL'
           ORDER BY idform, nrorem, nrorec"
       ) do |columns|
 
@@ -58,8 +57,6 @@ class MV02
                     code_detail[:price] 
                   end
 
-          status = return_status_by_code(column['estadecla'])
-
           content_for_csv << [
             '   ',
             code_detail[:desc],
@@ -68,7 +65,7 @@ class MV02
             '$',
             price,
             propierty,
-            status
+            return_status_by_code(column['estadecla'])
           ]
 
           Helpers.add_to_csv(content_for_csv)
