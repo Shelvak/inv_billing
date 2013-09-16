@@ -7,7 +7,7 @@ class MV02
       old_owner = ''
 
       $db_conn.exec(
-        " SELECT idform, nrorem, nrorec, 
+        " SELECT idform, nrorem, nrorec, estadecla,
           lts_rem_t, lts_rem_p, lts_rec_t, lts_rec_p,
           estadocu, numero, coddel, anoinv FROM #{mv}cab 
           WHERE idform > #{$last_ids["#{mv}cab"].to_i}

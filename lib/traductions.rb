@@ -1,6 +1,7 @@
 # encoding: utf-8
 #
 STATUS_CODES = {
+  'AL' => 'Alta',
   'AF' => 'Alta fuera de termino',
   'AN' => 'Anulación',
   'RE' => 'Rectificado expontaneo',

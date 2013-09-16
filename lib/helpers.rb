@@ -105,15 +105,12 @@ class Helpers
       end
     end
     def return_status_by_code(status)
-      if status != 'AL'
-        if STATUS_CODES.keys.include?(status)
-          STATUS_CODES[status]
-        else
-          'Tipo desconocido'
-        end
+      if STATUS_CODES.keys.include?(status)
+        STATUS_CODES[status]
       else
-        ''
-      end 
+        log_error(status)
+        'Tipo desconocido'
+      end
     end
   end
   

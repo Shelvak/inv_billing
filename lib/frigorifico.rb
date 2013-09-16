@@ -5,7 +5,7 @@ class Frigorifico
     old_owner = ''
     ['mvfr', 'mvfrch'].each do |fr|
       $db_conn.exec(
-        "SELECT  idform, codform, tipo_movi, nroins, numero, coddel, anoinv 
+        "SELECT  idform, codform, tipo_movi, nroins, numero, coddel, anoinv, estadecla
           FROM #{fr}cab
           WHERE idform > #{$last_ids[fr].to_i}
           AND fechapres >= '2013-08-27'

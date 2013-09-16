@@ -5,7 +5,7 @@ class MV05
     old_owner = ''
 
     $db_conn.exec(
-      "SELECT idform, tipo_movi, nroins, numero, coddel, anoinv FROM mv05cab 
+      "SELECT idform, tipo_movi, nroins, numero, coddel, anoinv, estadecla FROM mv05cab 
        WHERE idform > #{$last_ids['mv05cab'].to_i}
        AND fecpre >= '2013-08-27'
        AND numero != '0'
