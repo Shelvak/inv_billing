@@ -14,6 +14,8 @@ class Frigorifico
       ) do |columns|
 
         columns.each do |column|
+          $last_ids[fr] = column['idform']
+
           owner = Helpers.execute_sql(
             "SELECT nombre FROM inscriptos 
              WHERE nroins = '#{column['nroins']}'"
@@ -70,7 +72,6 @@ class Frigorifico
           ]
 
           Helpers.add_to_csv(content_for_csv)
-          $last_ids[fr] = column['idform']
         end                                                                   
       end
     end
