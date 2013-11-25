@@ -5,16 +5,16 @@ class MV05
     old_owner = ''
 
     $db_conn.exec(
-      "SELECT idform, tipo_movi, nroins, numero, coddel, anoinv, estadecla FROM mv05cab 
-       WHERE idform > #{$last_ids['mv05cab'].to_i}
-       AND fecpre >= '2013-08-27'
+      "SELECT idform, tipo_movi, nroins, numero, coddel, anoinv, estadecla FROM mv05cab
+       WHERE idform NOT IN (#{$last_ids['mv05cab']})
+       AND fecpre >= '2013-10-27'
        AND numero != '0'
        ORDER BY idform, nroins, tipo_movi"
     ) do |columns|
 
       columns.each do |column|
         owner = Helpers.execute_sql(
-          "SELECT nombre FROM inscriptos 
+          "SELECT nombre FROM inscriptos
            WHERE nroins = '#{column['nroins']}'"
         ).first
 
@@ -39,7 +39,7 @@ class MV05
 
           if query && volumen == 0
             if query.try(:first) && query.first['propiedad'].to_i == 2
-              propierty = 'Tercero' 
+              propierty = 'Tercero'
             end
 
             query.each { |d| volumen += d['volume'].to_i }
@@ -70,7 +70,7 @@ class MV05
         end
 
         owner_propierty = Helpers.execute_sql(
-          " SELECT rsocial FROM mv05terc 
+          " SELECT rsocial FROM mv05terc
             WHERE idform = #{column['idform']} "
         )
 
@@ -90,8 +90,9 @@ class MV05
         ]
 
         Helpers.add_to_csv(content_for_csv)
-        $last_ids['mv05cab'] = column['idform']
-      end                                                                   
+        $last_ids['mv05cab'] ||= []
+        $last_ids['mv05cab'] << column['idform'].to_i
+      end
     end
   end
 end

@@ -4,7 +4,7 @@ class Helpers
     def create_csv_for(owner)
       owner_name = delete_innecesary_spaces(owner)
       @@owner_file = "#{$month_directory}/#{owner_name}.csv" #.force_encoding('UTF-8')
-                
+
       unless File.exists? @@owner_file
         CSV.open(@@owner_file, 'ab') do |csv|
           3.times { csv << [] }
@@ -16,7 +16,11 @@ class Helpers
 
     def add_to_csv(contents)
       CSV.open(@@owner_file, 'ab') do |csv|
-        contents.each { |c| csv << c.map {|e| e.is_a?(String) ? e.force_encoding('UTF-8') : e} }
+        contents.each do |c|
+          csv << c.map do |e|
+            e.is_a?(String) ? e.force_encoding('ISO-8859-1') : e
+          end
+        end
       end
     end
 
@@ -64,12 +68,16 @@ class Helpers
     end
 
     def read_last_record_of_each_table
-      CSV.read('last_records.csv').each { |key, value| $last_ids[key] = value }
+      CSV.read('last_records.csv').each do |k, v|
+        values = v.gsub(/\[|\]/, '').split(',').map(&:to_i)
+        values.delete(0)
+        $last_ids[k] = values.join(',')
+      end
     end
 
     def save_last_record_of_each_table
       CSV.open('last_records.csv', 'w') do |csv|
-        $last_ids.each { |key, value| csv << [key, value] }
+        $last_ids.each { |key, values| csv << [key, values] }
       end
     end
 
@@ -82,20 +90,20 @@ class Helpers
         rows_number = csv_file.size - 1
 
         unless csv_file[rows_number][1].match(/tercero =>/i)
-          
-          csv_file.each do |csv| 
+
+          csv_file.each do |csv|
             total_global += csv[5].to_i
 
             if csv[6] =~ /\w+/i
               total_tercero += csv[5].to_i
             else
-              total_propio += csv[5].to_i 
+              total_propio += csv[5].to_i
             end
           end
 
           totals = [total_global, total_propio, total_tercero].join('/')
 
-          CSV.open(file, 'ab') do |csv| 
+          CSV.open(file, 'ab') do |csv|
             csv << []
             csv << [today, "Total => $ #{total_global}"]
             csv << [today, "Propio => $ #{total_propio}"]
@@ -113,7 +121,7 @@ class Helpers
       end
     end
   end
-  
+
   private
 
   def self.delete_innecesary_spaces(string)

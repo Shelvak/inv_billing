@@ -7,21 +7,22 @@ class Frigorifico
       $db_conn.exec(
         "SELECT  idform, codform, tipo_movi, nroins, numero, coddel, anoinv, estadecla
           FROM #{fr}cab
-          WHERE idform > #{$last_ids[fr].to_i}
-          AND fechapres >= '2013-08-27'
+          WHERE idform NOT IN (#{$last_ids[fr]})
+          AND fechapres >= '2013-10-27'
           AND numero != '0'
           ORDER BY nroins"
       ) do |columns|
 
         columns.each do |column|
-          $last_ids[fr] = column['idform']
+          $last_ids[fr] ||= []
+          $last_ids[fr] << column['idform'].to_i
 
           owner = Helpers.execute_sql(
-            "SELECT nombre FROM inscriptos 
+            "SELECT nombre FROM inscriptos
              WHERE nroins = '#{column['nroins']}'"
           ).first
           owner = owner ? owner['nombre'] : 'desconocido'
-        
+
           Helpers.create_csv_for(owner)
           Helpers.add_date_to_csv if owner != old_owner
           old_owner = owner
@@ -36,14 +37,14 @@ class Frigorifico
 
           if query
             if query.try(:first) && query.first['propiedad'].to_i == 2
-              propierty = 'Tercero' 
+              propierty = 'Tercero'
             end
 
             query.each { |d| volumen += d['litros'].to_i }
           end
 
           owner_propierty = Helpers.execute_sql(
-            " SELECT rsocial FROM mvfrigterc 
+            " SELECT rsocial FROM mvfrigterc
               WHERE idform = #{column['idform']} "
           )
 
@@ -53,8 +54,8 @@ class Frigorifico
 
 
           code_detail = CODIGOS["frigo-#{column['tipo_movi']}"]
-          frigo_type = case column['codform'].to_i 
-                       when 52 then '[Vino]' 
+          frigo_type = case column['codform'].to_i
+                       when 52 then '[Vino]'
                        when 54 then '[Espumante]'
                        else
                          '----'
@@ -72,7 +73,7 @@ class Frigorifico
           ]
 
           Helpers.add_to_csv(content_for_csv)
-        end                                                                   
+        end
       end
     end
   end

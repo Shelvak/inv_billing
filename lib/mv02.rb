@@ -9,9 +9,9 @@ class MV02
       $db_conn.exec(
         " SELECT idform, nrorem, nrorec, estadecla,
           lts_rem_t, lts_rem_p, lts_rec_t, lts_rec_p,
-          estadocu, numero, coddel, anoinv FROM #{mv}cab 
-          WHERE idform > #{$last_ids["#{mv}cab"].to_i}
-          AND fecinicio >= '2013-08-27'
+          estadocu, numero, coddel, anoinv FROM #{mv}cab
+          WHERE idform NOT IN (#{$last_ids["#{mv}cab"]})
+          AND fecinicio >= '2013-10-27'
           AND numero != '0'
           ORDER BY idform, nrorem, nrorec"
       ) do |columns|
@@ -19,7 +19,7 @@ class MV02
         columns.each do |column|
           owner_type = (column['estadocu'] == 'I') ? 'nrorem' : 'nrorec'
           owner = Helpers.execute_sql(
-            "SELECT nombre FROM inscriptos 
+            "SELECT nombre FROM inscriptos
              WHERE nroins = '#{column[owner_type]}'"
           ).first
           owner = owner ? owner['nombre'] : 'desconocido'
@@ -42,7 +42,7 @@ class MV02
                     end
 
           owner_propierty = Helpers.execute_sql(
-            " SELECT rsocial FROM #{mv}terc 
+            " SELECT rsocial FROM #{mv}terc
               WHERE idform = #{column['idform']} "
           )
 
@@ -54,7 +54,7 @@ class MV02
           price = if propierty.present? && !code_detail[:third_price].nil?
                     code_detail[:third_price]
                   else
-                    code_detail[:price] 
+                    code_detail[:price]
                   end
 
           content_for_csv << [
@@ -69,8 +69,9 @@ class MV02
           ]
 
           Helpers.add_to_csv(content_for_csv)
-          $last_ids["#{mv}cab"] = column['idform']
-        end                                                                   
+          $last_ids["#{mv}cab"] ||= []
+          $last_ids["#{mv}cab"] << column['idform'].to_i
+        end
       end
     end
   end

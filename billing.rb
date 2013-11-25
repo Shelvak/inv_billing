@@ -19,7 +19,7 @@ $db_conn = PGconn.connect(
 
 ## Initializers
 Helpers.create_month_dir
-$last_ids = {} # { table: id }
+$last_ids = {} # { table: [ids] }
 Helpers.read_last_record_of_each_table
 
 ## Generate the informs

@@ -6,15 +6,15 @@ class Exportation
 
     $db_conn.exec(
       "SELECT idform, paisdest, estdep, numero, coddel, anoinv FROM expcab1
-       WHERE idform > #{$last_ids['expcab1'].to_i}
-       AND fecpre >= '2013-08-27'
+       WHERE idform NOT IN (#{$last_ids['expcab1']})
+       AND fecpre >= '2013-10-27'
        AND numero != '0'
        ORDER BY idform, estdep, paisdest"
     ) do |columns|
 
       columns.each do |column|
         owner = Helpers.execute_sql(
-          "SELECT nombre FROM inscriptos 
+          "SELECT nombre FROM inscriptos
           WHERE nroins = '#{column['estdep']}'"
         ).first
         owner = owner ? owner['nombre'] : 'desconocido'
@@ -45,8 +45,9 @@ class Exportation
         ]
 
         Helpers.add_to_csv(content_for_csv)
-        $last_ids['expcab1'] = column['idform']
-      end                                                                   
+        $last_ids['expcab1'] ||= []
+        $last_ids['expcab1'] << column['idform'].to_i
+      end
     end
   end
 end
