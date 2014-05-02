@@ -3,7 +3,13 @@ class Helpers
   class << self
     def create_csv_for(owner)
       owner_name = delete_innecesary_spaces(owner)
-      @@owner_file = "#{$month_directory}/#{owner_name}.csv" #.force_encoding('UTF-8')
+
+      @@owner_file = if owner_name.match(/trivento/i)
+                       month = MONTHS[Date.today.month]
+                       "E:/Planillas/Trivento_#{month}.csv"
+                     else
+                       "#{$month_directory}/#{owner_name}.csv" #.force_encoding('UTF-8')
+                     end
 
       unless File.exists? @@owner_file
         CSV.open(@@owner_file, 'ab') do |csv|
@@ -112,6 +118,7 @@ class Helpers
         end
       end
     end
+
     def return_status_by_code(status)
       if STATUS_CODES.keys.include?(status)
         STATUS_CODES[status]
