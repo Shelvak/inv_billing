@@ -6,8 +6,8 @@ class Exportation
 
     $db_conn.exec(
       "SELECT idform, paisdest, estdep, numero, coddel, anoinv FROM expcab1
-       WHERE idform NOT IN (#{$last_ids['expcab1']})
-       AND fecpre >= '2013-10-27'
+       WHERE idform NOT IN (#{$last_ids['expcab1'].join(',')})
+       AND fecpre >= '2014-04-27'
        AND numero != '0'
        ORDER BY idform, estdep, paisdest"
     ) do |columns|
@@ -46,7 +46,7 @@ class Exportation
 
         Helpers.add_to_csv(content_for_csv)
         $last_ids['expcab1'] ||= []
-        $last_ids['expcab1'] << column['idform'].to_i
+        $last_ids['expcab1'] << column['idform']
       end
     end
   end

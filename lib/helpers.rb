@@ -77,13 +77,13 @@ class Helpers
       CSV.read('last_records.csv').each do |k, v|
         values = v.gsub(/\[|\]/, '').split(',').map(&:to_i)
         values.delete(0)
-        $last_ids[k] = values.join(',')
+        $last_ids[k] = values.flatten
       end
     end
 
     def save_last_record_of_each_table
       CSV.open('last_records.csv', 'w') do |csv|
-        $last_ids.each { |key, values| csv << [key, values] }
+        $last_ids.each { |key, values| csv << [key, values.map(&:to_i).flatten] }
       end
     end
 

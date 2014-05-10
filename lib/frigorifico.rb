@@ -7,16 +7,13 @@ class Frigorifico
       $db_conn.exec(
         "SELECT  idform, codform, tipo_movi, nroins, numero, coddel, anoinv, estadecla
           FROM #{fr}cab
-          WHERE idform NOT IN (#{$last_ids[fr]})
-          AND fechapres >= '2013-10-27'
+          WHERE idform NOT IN (#{$last_ids[fr].join(',')})
+          AND fechapres >= '2014-04-27'
           AND numero != '0'
           ORDER BY nroins"
       ) do |columns|
 
         columns.each do |column|
-          $last_ids[fr] ||= []
-          $last_ids[fr] << column['idform'].to_i
-
           owner = Helpers.execute_sql(
             "SELECT nombre FROM inscriptos
              WHERE nroins = '#{column['nroins']}'"
@@ -73,6 +70,8 @@ class Frigorifico
           ]
 
           Helpers.add_to_csv(content_for_csv)
+          $last_ids[fr] ||= []
+          $last_ids[fr] << column['idform']
         end
       end
     end

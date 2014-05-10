@@ -5,13 +5,12 @@ class MV02
 
     ['mv02', 'mv02ch'].each do |mv|
       old_owner = ''
-
       $db_conn.exec(
         " SELECT idform, nrorem, nrorec, estadecla,
           lts_rem_t, lts_rem_p, lts_rec_t, lts_rec_p,
           estadocu, numero, coddel, anoinv FROM #{mv}cab
-          WHERE idform NOT IN (#{$last_ids["#{mv}cab"]})
-          AND fecinicio >= '2013-10-27'
+          WHERE idform NOT IN (#{$last_ids["#{mv}cab"].join(',')})
+          AND fecinicio >= '2014-04-27'
           AND numero != '0'
           ORDER BY idform, nrorem, nrorec"
       ) do |columns|
@@ -70,7 +69,7 @@ class MV02
 
           Helpers.add_to_csv(content_for_csv)
           $last_ids["#{mv}cab"] ||= []
-          $last_ids["#{mv}cab"] << column['idform'].to_i
+          $last_ids["#{mv}cab"] << column['idform']
         end
       end
     end

@@ -17,17 +17,22 @@ $db_conn = PGconn.connect(
   dbname: 'Bodegas', user: 'postgres', password: 'postgres'
 )
 
-## Initializers
-Helpers.create_month_dir
-$last_ids = {} # { table: [ids] }
-Helpers.read_last_record_of_each_table
+begin
+  ## Initializers
+  Helpers.create_month_dir
+  $last_ids = {} # { table: [ids] }
+  Helpers.read_last_record_of_each_table
 
-## Generate the informs
-MV02.generate
-MV05.generate
-Exportation.generate
-Frigorifico.generate
+  ## Generate the informs
+  MV02.generate
+  MV05.generate
+  Exportation.generate
+  Frigorifico.generate
 
-## Finalizers ^^
-Helpers.save_last_record_of_each_table
-Helpers.do_sum_in_all_files
+  ## Finalizers ^^
+  Helpers.save_last_record_of_each_table
+  Helpers.do_sum_in_all_files
+rescue => e
+  Helpers.log_error(e)
+  Helpers.log_error(e.backtrace.join("\n\t"))
+end

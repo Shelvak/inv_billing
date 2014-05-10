@@ -6,8 +6,8 @@ class MV05
 
     $db_conn.exec(
       "SELECT idform, tipo_movi, nroins, numero, coddel, anoinv, estadecla FROM mv05cab
-       WHERE idform NOT IN (#{$last_ids['mv05cab']})
-       AND fecpre >= '2013-10-27'
+       WHERE idform NOT IN (#{$last_ids['mv05cab'].join(',')})
+       AND fecpre >= '2014-04-27'
        AND numero != '0'
        ORDER BY idform, nroins, tipo_movi"
     ) do |columns|
@@ -91,7 +91,7 @@ class MV05
 
         Helpers.add_to_csv(content_for_csv)
         $last_ids['mv05cab'] ||= []
-        $last_ids['mv05cab'] << column['idform'].to_i
+        $last_ids['mv05cab'] << column['idform']
       end
     end
   end
