@@ -1,12 +1,12 @@
 # encoding: ISO8859-1
 class Helpers
   class << self
-    def create_csv_for(owner)
+    def create_csv_for(owner, nroins = '')
       owner_name = delete_innecesary_spaces(owner)
 
       @@owner_file = if owner_name.match(/trivento/i)
                        month = MONTHS[Date.today.month]
-                       "E:/Planillas/Trivento_#{month}.csv"
+                       "E:/Planillas/Trivento_#{nroins}_#{month}.csv"
                      else
                        "#{$month_directory}/#{owner_name}.csv" #.force_encoding('UTF-8')
                      end

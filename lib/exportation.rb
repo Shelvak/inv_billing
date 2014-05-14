@@ -19,7 +19,7 @@ class Exportation
         ).first
         owner = owner ? owner['nombre'] : 'desconocido'
 
-        Helpers.create_csv_for(owner)
+        Helpers.create_csv_for(owner, column['estdep'])
         Helpers.add_date_to_csv if owner != old_owner
         old_owner = owner
 
