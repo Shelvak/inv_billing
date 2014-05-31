@@ -6,9 +6,9 @@ class Exportation
 
     $db_conn.exec(
       "SELECT idform, paisdest, estdep, numero, coddel, anoinv FROM expcab1
-       WHERE idform NOT IN (#{$last_ids['expcab1'].join(',')})
+       WHERE numero != '0'
        AND fecpre >= '2014-04-27'
-       AND numero != '0'
+       AND idform NOT IN (#{$last_ids['expcab1'].join(',')})
        ORDER BY idform, estdep, paisdest"
     ) do |columns|
 

@@ -12,11 +12,9 @@ end
 ## Rails helpers =D
 require 'active_support/core_ext/date/calculations.rb'
 
-
 begin
   ## Initializers
   DB.init
-  p $db_bodegas
   DB.insert_olds
 rescue => e
   Helpers.log_error(e)

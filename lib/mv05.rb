@@ -6,9 +6,9 @@ class MV05
 
     $db_conn.exec(
       "SELECT idform, tipo_movi, nroins, numero, coddel, anoinv, estadecla FROM mv05cab
-       WHERE idform NOT IN (#{$last_ids['mv05cab'].join(',')})
+       WHERE numero != '0'
        AND fecpre >= '2014-04-27'
-       AND numero != '0'
+       AND idform NOT IN (#{$last_ids['mv05cab'].join(',')})
        ORDER BY idform, nroins, tipo_movi"
     ) do |columns|
 

@@ -6,12 +6,24 @@ class DB
         dbname: 'Bodegas', user: 'postgres', password: 'postgres'
       )
 
-      $db_bodegas = PGconn.connect(
-        host: '192.168.0.200',
-        dbname: 'inv_bodegas',
-        user: 'inv_tagger',
-        password: 'inv_tagger'
-      )
+      tries = 3
+
+      begin
+        $db_bodegas = PGconn.connect(
+          host: '192.168.0.200',
+          dbname: 'inv_bodegas',
+          user: 'inv_tagger',
+          password: 'inv_tagger'
+        )
+      rescue => e
+        if (tries -= 1) >= 0
+          sleep 1
+          retry
+        end
+
+        Helpers.log_error(e)
+        Helpers.log_error(e.backtrace.join("\n\t"))
+      end
 
       $last_ids = {}
       $new_ids = {}
@@ -40,16 +52,20 @@ class DB
       table = opts[:table]
       ids = opts[:ids].delete_if { |id| id.to_i <= 0 }.join('),(')
 
-      $db_bodegas.exec "INSERT INTO #{table} VALUES (#{ids})"
+      begin
+        $db_bodegas.exec("INSERT INTO #{table} VALUES (#{ids})") if ids != ''
+      rescue => e
+        Helpers.log_error(e)
+      end
     end
 
     def insert_olds
-      CSV.read('last_records.csv').each do |k, v|
-        values = v.gsub(/\[|\]/, '').split(',').map(&:to_i)
-        values.delete(0)
+      #CSV.read('last_records.csv').each do |k, v|
+      #  values = v.gsub(/\[|\]/, '').split(',').map(&:to_i)
+      #  values.delete(0)
 
-        insert_ids_in(table: k, values.flatten.uniq.compact)
-      end
+      #  insert_ids_in(table: k, ids: values.flatten.uniq.compact)
+      #end
     end
   end
 end
