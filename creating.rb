@@ -16,18 +16,8 @@ require 'active_support/core_ext/date/calculations.rb'
 begin
   ## Initializers
   DB.init
-  Helpers.create_month_dir
-  DB.read_last_ids
-
-  ## Generate the informs
-  MV02.generate
-  MV05.generate
-  Exportation.generate
-  Frigorifico.generate
-
-  ## Finalizers ^^
-  DB.save_new_ids
-  Helpers.do_sum_in_all_files
+  p $db_bodegas
+  DB.insert_olds
 rescue => e
   Helpers.log_error(e)
   Helpers.log_error(e.backtrace.join("\n\t"))

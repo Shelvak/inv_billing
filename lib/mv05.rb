@@ -90,8 +90,7 @@ class MV05
         ]
 
         Helpers.add_to_csv(content_for_csv)
-        $last_ids['mv05cab'] ||= []
-        $last_ids['mv05cab'] << column['idform']
+        $new_ids['mv05cab'] << column['idform'].to_i
       end
     end
   end

@@ -70,8 +70,7 @@ class Frigorifico
           ]
 
           Helpers.add_to_csv(content_for_csv)
-          $last_ids[fr] ||= []
-          $last_ids[fr] << column['idform']
+          $new_ids[fr] << column['idform'].to_i
         end
       end
     end

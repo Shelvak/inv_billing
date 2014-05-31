@@ -45,8 +45,7 @@ class Exportation
         ]
 
         Helpers.add_to_csv(content_for_csv)
-        $last_ids['expcab1'] ||= []
-        $last_ids['expcab1'] << column['idform']
+        $new_ids['expcab1'] << column['idform'].to_i
       end
     end
   end

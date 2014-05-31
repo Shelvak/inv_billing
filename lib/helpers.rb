@@ -24,7 +24,7 @@ class Helpers
       CSV.open(@@owner_file, 'ab') do |csv|
         contents.each do |c|
           csv << c.map do |e|
-            e.is_a?(String) ? e.force_encoding('ISO-8859-1') : e
+            e.is_a?(String) ? delete_innecesary_spaces(e.force_encoding('ISO-8859-1')) : e
           end
         end
       end
@@ -71,20 +71,6 @@ class Helpers
       $month_directory = "E:/Planillas/#{year}/#{month}"
       Helpers.mkdir "E:/Planillas/#{year}"
       Helpers.mkdir $month_directory
-    end
-
-    def read_last_record_of_each_table
-      CSV.read('last_records.csv').each do |k, v|
-        values = v.gsub(/\[|\]/, '').split(',').map(&:to_i)
-        values.delete(0)
-        $last_ids[k] = values.flatten
-      end
-    end
-
-    def save_last_record_of_each_table
-      CSV.open('last_records.csv', 'w') do |csv|
-        $last_ids.each { |key, values| csv << [key, values.map(&:to_i).flatten] }
-      end
     end
 
     def do_sum_in_all_files
