@@ -4,74 +4,72 @@ class Frigorifico
   def self.generate
     old_owner = ''
     ['mvfr', 'mvfrch'].each do |fr|
-      $db_conn.exec(
+      puts "empieza #{fr}"
+      Helpers.execute_sql(
         "SELECT  idform, codform, tipo_movi, nroins, numero, coddel, anoinv, estadecla
           FROM #{fr}cab
           WHERE numero != '0'
-          AND fechapres >= '2014-04-27'
+          AND fechapres >= '2015-04-27'
           AND idform NOT IN (#{$last_ids[fr].join(',')})
-          ORDER BY nroins"
-      ) do |columns|
+          ORDER BY nroins;"
+      ).each do |column|
 
-        columns.each do |column|
-          owner = Helpers.execute_sql(
-            "SELECT nombre FROM inscriptos
-             WHERE nroins = '#{column['nroins']}'"
-          ).first
-          owner = owner ? owner['nombre'] : 'desconocido'
+        owner = Helpers.execute_sql(
+          "SELECT nombre FROM inscriptos
+           WHERE nroins = '#{column['nroins']}'"
+        ).first
+        owner = owner ? owner['nombre'] : 'desconocido'
 
-          Helpers.create_csv_for(owner, column['nroins'])
-          Helpers.add_date_to_csv if owner != old_owner
-          old_owner = owner
+        Helpers.create_csv_for(owner, column['nroins'])
+        Helpers.add_date_to_csv if owner != old_owner
+        old_owner = owner
 
-          content_for_csv = []
-          volumen, propierty = 0, ' '
+        volumen, propierty = 0, ' '
 
-          query = Helpers.execute_sql(
-            " SELECT litros, propiedad FROM #{fr}det
-              WHERE idform = #{column['idform']}"
-          )
+        query = Helpers.execute_sql(
+          " SELECT litros, propiedad FROM #{fr}det
+            WHERE idform = #{column['idform']}"
+        )
 
-          if query
-            if query.try(:first) && query.first['propiedad'].to_i == 2
-              propierty = 'Tercero'
-            end
-
-            query.each { |d| volumen += d['litros'].to_i }
+        if query
+          if query.try(:first) && query.first['propiedad'].to_i == 2
+            propierty = 'Tercero'
           end
 
-          owner_propierty = Helpers.execute_sql(
-            " SELECT rsocial FROM mvfrigterc
-              WHERE idform = #{column['idform']} "
-          )
-
-          if owner_propierty && owner_propierty.count > 0
-            propierty = owner_propierty.first['rsocial']
-          end
-
-
-          code_detail = CODIGOS["frigo-#{column['tipo_movi']}"]
-          frigo_type = case column['codform'].to_i
-                       when 52 then '[Vino]'
-                       when 54 then '[Espumante]'
-                       else
-                         '----'
-                       end
-
-          content_for_csv << [
-            '   ',
-            [frigo_type, code_detail[:desc]].join(' '),
-            [column['coddel'], column['numero'], column['anoinv']].join('-'),
-            "P/ #{volumen} L",
-            '$',
-            code_detail[:price],
-            propierty,
-            Helpers.return_status_by_code(column['estadecla'])
-          ]
-
-          Helpers.add_to_csv(content_for_csv)
-          $new_ids[fr] << column['idform'].to_i
+          query.each { |d| volumen += d['litros'].to_i }
         end
+
+        owner_propierty = Helpers.execute_sql(
+          " SELECT rsocial FROM mvfrigterc
+            WHERE idform = #{column['idform']} "
+        )
+
+        if owner_propierty && owner_propierty.count > 0
+          propierty = owner_propierty.first['rsocial']
+        end
+
+
+        code_detail = CODIGOS["frigo-#{column['tipo_movi']}"]
+        frigo_type = case column['codform'].to_i
+                     when 52 then '[Vino]'
+                     when 54 then '[Espumante]'
+                     else
+                       '----'
+                     end
+
+        content_for_csv = [
+          '   ',
+          [frigo_type, code_detail[:desc]].join(' '),
+          [column['coddel'], column['numero'], column['anoinv']].join('-'),
+          "P/ #{volumen} L",
+          '$',
+          code_detail[:price],
+          propierty,
+          Helpers.return_status_by_code(column['estadecla'])
+        ]
+
+        Helpers.add_to_csv(content_for_csv)
+        $new_ids[fr] << column['idform'].to_i
       end
     end
   end

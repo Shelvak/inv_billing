@@ -20,12 +20,10 @@ class Helpers
       end
     end
 
-    def add_to_csv(contents)
+    def add_to_csv(content)
       CSV.open(@@owner_file, 'ab') do |csv|
-        contents.each do |c|
-          csv << c.map do |e|
-            e.is_a?(String) ? delete_innecesary_spaces(e.force_encoding('ISO-8859-1')) : e
-          end
+        csv << content.map do |e|
+          e.is_a?(String) ? delete_innecesary_spaces(e.force_encoding('ISO-8859-1')) : e
         end
       end
     end
@@ -45,11 +43,26 @@ class Helpers
     end
 
     def log_error(error)
-      %x{echo "#{error}" >> errores}
+      File.open('errores', 'a') do |f|
+        f.write("#{error}\n")
+      end
+    end
+
+    def log_info(info)
+      File.open('info', 'a') do |f|
+        f.write("[#{Time.now}]  #{info}\n")
+      end
+    end
+
+    def log_sql(sql)
+      File.open('sql', 'a') do |f|
+        f.write("[#{Time.now}]  #{sql}\n")
+      end
     end
 
     def execute_sql(query)
       begin
+        log_sql(query)
         $db_conn.exec(query)
       rescue => e
         log_error e
@@ -93,8 +106,6 @@ class Helpers
             end
           end
 
-          totals = [total_global, total_propio, total_tercero].join('/')
-
           CSV.open(file, 'ab') do |csv|
             csv << []
             csv << [today, "Total => $ #{total_global}"]
@@ -113,12 +124,11 @@ class Helpers
         'Tipo desconocido'
       end
     end
-  end
 
-  private
+    private
 
-  def self.delete_innecesary_spaces(string)
-    new_string = string[-1] == ' ' ? string.chomp(' ') : string
-    new_string[-1] == ' ' ? delete_innecesary_spaces(new_string) : new_string
+    def delete_innecesary_spaces(string)
+      string.strip.split(' ').join(' ')
+    end
   end
 end

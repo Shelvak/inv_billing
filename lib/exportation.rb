@@ -4,49 +4,47 @@ class Exportation
   def self.generate
     old_owner = ''
 
-    $db_conn.exec(
+    Helpers.execute_sql(
       "SELECT idform, paisdest, estdep, numero, coddel, anoinv FROM expcab1
        WHERE numero != '0'
-       AND fecpre >= '2014-04-27'
+       AND fecpre >= '2015-04-27'
        AND idform NOT IN (#{$last_ids['expcab1'].join(',')})
-       ORDER BY idform, estdep, paisdest"
-    ) do |columns|
+       ORDER BY idform, estdep, paisdest;"
+    ).each do |column|
 
-      columns.each do |column|
-        owner = Helpers.execute_sql(
-          "SELECT nombre FROM inscriptos
-          WHERE nroins = '#{column['estdep']}'"
-        ).first
-        owner = owner ? owner['nombre'] : 'desconocido'
 
-        Helpers.create_csv_for(owner, column['estdep'])
-        Helpers.add_date_to_csv if owner != old_owner
-        old_owner = owner
+      owner = Helpers.execute_sql(
+        "SELECT nombre FROM inscriptos
+        WHERE nroins = '#{column['estdep']}'"
+      ).first
+      owner = owner ? owner['nombre'] : 'desconocido'
 
-        content_for_csv = []
-        code = column['paisdest']
-        country = COUNTRIES[code.to_i]
-        country ||= code
+      Helpers.create_csv_for(owner, column['estdep'])
+      Helpers.add_date_to_csv if owner != old_owner
+      old_owner = owner
 
-        query = Helpers.execute_sql(
-          "SELECT rsocial FROM expoterc WHERE idform = #{column['idform'].to_i}"
-        )
+      code = column['paisdest']
+      country = COUNTRIES[code.to_i]
+      country ||= code
 
-        owner_propierty = (query && query.count > 0 ? query.first['rsocial'] : '')
+      query = Helpers.execute_sql(
+        "SELECT rsocial FROM expoterc WHERE idform = #{column['idform'].to_i}"
+      )
 
-        content_for_csv << [
-          '   ',
-          'Presenta guía de exportación',
-          [column['coddel'], column['numero'], column['anoinv']].join('-'),
-          country,
-          '$',
-          180,
-          owner_propierty
-        ]
+      owner_propierty = (query && query.count > 0 ? query.first['rsocial'] : '')
 
-        Helpers.add_to_csv(content_for_csv)
-        $new_ids['expcab1'] << column['idform'].to_i
-      end
+      content_for_csv = [
+        '   ',
+        'Presenta guía de exportación',
+        [column['coddel'], column['numero'], column['anoinv']].join('-'),
+        country,
+        '$',
+        180,
+        owner_propierty
+      ]
+
+      Helpers.add_to_csv(content_for_csv)
+      $new_ids['expcab1'] << column['idform'].to_i
     end
   end
 end

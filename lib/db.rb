@@ -11,16 +11,15 @@ class DB
       begin
         $db_bodegas = PGconn.connect(
           host: '192.168.0.200',
-          dbname: 'inv_bodegas',
-          user: 'inv_tagger',
-          password: 'inv_tagger'
-        )
+          dbname: 'inv_bodegas', user: 'inv_tagger', password: 'inv_tagger')
       rescue => e
         if (tries -= 1) >= 0
           sleep 1
           retry
         end
 
+        puts "error en bodegas 1"
+        p e
         Helpers.log_error(e)
         Helpers.log_error(e.backtrace.join("\n\t"))
       end
@@ -44,28 +43,26 @@ class DB
 
     def all_records_of(table)
       $db_bodegas.exec(
-        "SELECT DISTINCT(idform) FROM #{table}"
-      ).map { |r| r['idform'] }
+        "SELECT idform FROM #{table} ORDER BY idform DESC LIMIT 1000;"
+      ).map { |r| r['idform'].to_i }.uniq
     end
 
     def insert_ids_in(opts = {})
       table = opts[:table]
-      ids = opts[:ids].delete_if { |id| id.to_i <= 0 }.join('),(')
+      ids_by_table = $last_ids[table]
+      ids = opts[:ids].delete_if { |id| id.to_i <= 0 || ids_by_table.include?(id) }.join('),(')
 
       begin
-        $db_bodegas.exec("INSERT INTO #{table} VALUES (#{ids})") if ids != ''
+        if ids != ''
+          sql = "INSERT INTO #{table} VALUES (#{ids})"
+          Helpers.log_sql(sql)
+          $db_bodegas.exec(sql)
+        end
       rescue => e
+        puts "error en bodegas 2"
+        p e
         Helpers.log_error(e)
       end
-    end
-
-    def insert_olds
-      #CSV.read('last_records.csv').each do |k, v|
-      #  values = v.gsub(/\[|\]/, '').split(',').map(&:to_i)
-      #  values.delete(0)
-
-      #  insert_ids_in(table: k, ids: values.flatten.uniq.compact)
-      #end
     end
   end
 end
