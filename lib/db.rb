@@ -44,13 +44,21 @@ class DB
     def all_records_of(table)
       $db_bodegas.exec(
         "SELECT idform FROM #{table} ORDER BY idform DESC LIMIT 1000;"
-      ).map { |r| r['idform'].to_i }.uniq
+      ).map { |r| r['idform'].to_i }
     end
 
     def insert_ids_in(opts = {})
       table = opts[:table]
-      ids_by_table = $last_ids[table]
-      ids = opts[:ids].delete_if { |id| id.to_i <= 0 || ids_by_table.include?(id) }.join('),(')
+      begin
+        ids_by_table = $db_bodegas.exec(
+          "SELECT idform FROM #{table};"
+        ).map { |r| r['idform'].to_s }
+      rescue => e
+        Helpers.log_error(e)
+        ids_by_table = $last_ids[table]
+      end
+
+      ids = opts[:ids].map { |id| id unless id.to_i <= 0 || ids_by_table.include?(id) }.compact.uniq.join('),(')
 
       begin
         if ids != ''

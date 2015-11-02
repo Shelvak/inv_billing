@@ -9,7 +9,7 @@ class Frigorifico
         "SELECT  idform, codform, tipo_movi, nroins, numero, coddel, anoinv, estadecla
           FROM #{fr}cab
           WHERE numero != '0'
-          AND fechapres >= '2015-04-27'
+          AND fechapres >= '#{Helpers.two_months_ago}'
           AND idform NOT IN (#{$last_ids[fr].join(',')})
           ORDER BY nroins;"
       ).each do |column|

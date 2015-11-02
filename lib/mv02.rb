@@ -10,7 +10,7 @@ class MV02
         lts_rem_t, lts_rem_p, lts_rec_t, lts_rec_p,
         estadocu, numero, coddel, anoinv FROM #{mv}cab
         WHERE numero != '0'
-        AND fecinicio >= '2015-04-27'
+        AND fecinicio >= '#{Helpers.two_months_ago}'
         AND idform NOT IN (#{$last_ids["#{mv}cab"].join(',')})
         ORDER BY idform, nrorem, nrorec").each do |column|
 

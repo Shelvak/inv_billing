@@ -8,7 +8,7 @@ class MV05
     Helpers.execute_sql(
       "SELECT idform, tipo_movi, nroins, numero, coddel, anoinv, estadecla FROM mv05cab
        WHERE numero != '0'
-       AND fecpre >= '2015-04-27'
+       AND fecpre >= '#{Helpers.two_months_ago}'
        AND idform NOT IN (#{$last_ids['mv05cab'].join(',')})
        ORDER BY idform, nroins, tipo_movi;"
     ).each do |column|

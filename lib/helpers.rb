@@ -125,6 +125,10 @@ class Helpers
       end
     end
 
+    def two_months_ago
+      Date.today.advance(months: -2).to_s
+    end
+
     private
 
     def delete_innecesary_spaces(string)
