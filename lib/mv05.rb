@@ -6,7 +6,7 @@ class MV05
 
     puts "empieza 05"
     Helpers.execute_sql(
-      "SELECT idform, tipo_movi, nroins, numero, coddel, anoinv, estadecla FROM mv05cab
+      "SELECT idform, fecpre, tipo_movi, nroins, numero, coddel, anoinv, estadecla FROM mv05cab
        WHERE numero != '0'
        AND fecpre >= '#{Helpers.two_months_ago}'
        AND idform NOT IN (#{$last_ids['mv05cab'].join(',')})
@@ -21,7 +21,6 @@ class MV05
       owner = owner ? owner['nombre'] : 'desconocido'
 
       Helpers.create_csv_for(owner, column['nroins'])
-      Helpers.add_date_to_csv if owner != old_owner
       old_owner = owner
 
       code = column['tipo_movi']
@@ -78,14 +77,14 @@ class MV05
       end
 
       content_for_csv = [
-        '   ',
+        column['fecpre'],
         [code, code_detail[:desc]].join(' - '),
         [column['coddel'], column['numero'], column['anoinv']].join('-'),
         "P/ #{volumen} L",
         '$',
-          code_detail[:price],
-          propierty,
-          Helpers.return_status_by_code(column['estadecla'])
+        code_detail[:price],
+        propierty,
+        Helpers.return_status_by_code(column['estadecla'])
       ]
 
       Helpers.add_to_csv(content_for_csv)

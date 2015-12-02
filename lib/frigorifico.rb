@@ -6,7 +6,7 @@ class Frigorifico
     ['mvfr', 'mvfrch'].each do |fr|
       puts "empieza #{fr}"
       Helpers.execute_sql(
-        "SELECT  idform, codform, tipo_movi, nroins, numero, coddel, anoinv, estadecla
+        "SELECT  idform, fechapres, codform, tipo_movi, nroins, numero, coddel, anoinv, estadecla
           FROM #{fr}cab
           WHERE numero != '0'
           AND fechapres >= '#{Helpers.two_months_ago}'
@@ -21,7 +21,6 @@ class Frigorifico
         owner = owner ? owner['nombre'] : 'desconocido'
 
         Helpers.create_csv_for(owner, column['nroins'])
-        Helpers.add_date_to_csv if owner != old_owner
         old_owner = owner
 
         volumen, propierty = 0, ' '
@@ -58,7 +57,7 @@ class Frigorifico
                      end
 
         content_for_csv = [
-          '   ',
+          column['fechapres'],
           [frigo_type, code_detail[:desc]].join(' '),
           [column['coddel'], column['numero'], column['anoinv']].join('-'),
           "P/ #{volumen} L",

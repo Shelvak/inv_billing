@@ -6,7 +6,7 @@ class MV02
     ['mv02', 'mv02ch'].each do |mv|
       old_owner = ''
 
-      Helpers.execute_sql(" SELECT idform, nrorem, nrorec, estadecla,
+      Helpers.execute_sql(" SELECT idform, fecinicio, nrorem, nrorec, estadecla,
         lts_rem_t, lts_rem_p, lts_rec_t, lts_rec_p,
         estadocu, numero, coddel, anoinv FROM #{mv}cab
         WHERE numero != '0'
@@ -22,7 +22,6 @@ class MV02
         owner = owner ? owner['nombre'] : 'desconocido'
 
         Helpers.create_csv_for(owner, column[owner_type])
-        Helpers.add_date_to_csv if owner != old_owner
         old_owner = owner
 
         volumen, propierty = if column['estadocu'] == 'I'
@@ -54,7 +53,7 @@ class MV02
                 end
 
         content_for_csv = [
-          '   ',
+          column['fecinicio'],
           code_detail[:desc],
           [column['coddel'], column['numero'], column['anoinv']].join('-'),
           "P/ #{volumen} L",

@@ -52,24 +52,26 @@ class DB
       begin
         ids_by_table = $db_bodegas.exec(
           "SELECT idform FROM #{table};"
-        ).map { |r| r['idform'].to_s }
+        ).map { |r| r['idform'] }
       rescue => e
         Helpers.log_error(e)
         ids_by_table = $last_ids[table]
       end
 
-      ids = opts[:ids].map { |id| id unless id.to_i <= 0 || ids_by_table.include?(id) }.compact.uniq.join('),(')
+      ids_by_table = ids_by_table.map(&:to_i)
 
-      begin
-        if ids != ''
-          sql = "INSERT INTO #{table} VALUES (#{ids})"
-          Helpers.log_sql(sql)
-          $db_bodegas.exec(sql)
+      ids = opts[:ids].map(&:to_i).map { |id| id unless id <= 0 || ids_by_table.include?(id) }.compact.uniq
+
+      ids.each do |id|
+        begin
+            sql = "INSERT INTO #{table} (idform) VALUES (#{id});"
+            Helpers.log_sql(sql)
+            $db_bodegas.exec(sql)
+        rescue => e
+          puts "error en bodegas 2"
+          p e
+          Helpers.log_error(e)
         end
-      rescue => e
-        puts "error en bodegas 2"
-        p e
-        Helpers.log_error(e)
       end
     end
   end

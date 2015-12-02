@@ -5,7 +5,7 @@ class Helpers
       owner_name = delete_innecesary_spaces(owner)
 
       @@owner_file = if owner_name.match(/trivento/i)
-                       month = MONTHS[Date.today.month]
+                       month = MONTHS[today.month]
                        "E:/Planillas/Trivento_#{nroins}_#{month}.csv"
                      else
                        "#{$month_directory}/#{owner_name}.csv" #.force_encoding('UTF-8')
@@ -28,12 +28,6 @@ class Helpers
       end
     end
 
-    def add_date_to_csv
-      CSV.open(@@owner_file, 'ab') do |csv|
-        csv << [Date.today.to_s.split('-').reverse.join('-')]
-      end
-    end
-
     def mkdir(dir)
       begin
         Dir.mkdir dir
@@ -45,12 +39,6 @@ class Helpers
     def log_error(error)
       File.open('errores', 'a') do |f|
         f.write("#{error}\n")
-      end
-    end
-
-    def log_info(info)
-      File.open('info', 'a') do |f|
-        f.write("[#{Time.now}]  #{info}\n")
       end
     end
 
@@ -70,15 +58,13 @@ class Helpers
     end
 
     def create_month_dir
-      date = Date.today
-
-      if date.day >= 27
-        next_month = date.next_month
+      if today.day >= 27
+        next_month = today.next_month
         year = next_month.year
         month = [next_month.month, MONTHS[next_month.month]].join(' ')
       else
-        year = date.year
-        month = [date.month, MONTHS[date.month]].join(' ')
+        year = today.year
+        month = [today.month, MONTHS[today.month]].join(' ')
       end
 
       $month_directory = "E:/Planillas/#{year}/#{month}"
@@ -86,15 +72,22 @@ class Helpers
       Helpers.mkdir $month_directory
     end
 
+    def today
+      @_today ||= Date.today
+    end
+
+    def today_to_s
+      @_today_to_s ||= today.strftime('%d-%m-%y')
+    end
+
     def do_sum_in_all_files
-      today = Date.today.to_s.split('-').reverse.join('-')
       Dir.glob("#{$month_directory}/*.csv").each do |file|
         total_global = total_propio = total_tercero = 0
 
         csv_file = CSV.read(file)
         rows_number = csv_file.size - 1
 
-        unless csv_file[rows_number][1].match(/tercero =>/i)
+        unless csv_file[rows_number][1].match(/Tercero =>/i)
 
           csv_file.each do |csv|
             total_global += csv[5].to_i
@@ -108,9 +101,9 @@ class Helpers
 
           CSV.open(file, 'ab') do |csv|
             csv << []
-            csv << [today, "Total => $ #{total_global}"]
-            csv << [today, "Propio => $ #{total_propio}"]
-            csv << [today, "Tercero => $ #{total_tercero}"]
+            csv << [today_to_s, "Total => $ #{total_global}"]
+            csv << [today_to_s, "Propio => $ #{total_propio}"]
+            csv << [today_to_s, "Tercero => $ #{total_tercero}"]
           end
         end
       end
@@ -126,7 +119,7 @@ class Helpers
     end
 
     def two_months_ago
-      Date.today.advance(months: -2).to_s
+      @_two_months_ago ||= today.advance(months: -2).to_s
     end
 
     private

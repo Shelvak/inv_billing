@@ -5,7 +5,7 @@ class Exportation
     old_owner = ''
 
     Helpers.execute_sql(
-      "SELECT idform, paisdest, estdep, numero, coddel, anoinv FROM expcab1
+      "SELECT idform, fecpre, paisdest, estdep, numero, coddel, anoinv FROM expcab1
        WHERE numero != '0'
        AND fecpre >= '#{Helpers.two_months_ago}'
        AND idform NOT IN (#{$last_ids['expcab1'].join(',')})
@@ -20,7 +20,6 @@ class Exportation
       owner = owner ? owner['nombre'] : 'desconocido'
 
       Helpers.create_csv_for(owner, column['estdep'])
-      Helpers.add_date_to_csv if owner != old_owner
       old_owner = owner
 
       code = column['paisdest']
@@ -34,7 +33,7 @@ class Exportation
       owner_propierty = (query && query.count > 0 ? query.first['rsocial'] : '')
 
       content_for_csv = [
-        '   ',
+        column['fecpre'],
         'Presenta guía de exportación',
         [column['coddel'], column['numero'], column['anoinv']].join('-'),
         country,
