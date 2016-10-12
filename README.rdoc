@@ -5,8 +5,16 @@
 
 == Instalando
 
+  Instalar ruby 1.9.1/2
+
   gem install pg -v 0.11.0
   gem install activesupport
+
+
+== Ejecutar
+
+  - cd inv_billing
+  - ruby billing.rb
 
 ==== Ejemplo
 
@@ -24,7 +32,7 @@ Mostrará:
 
 == (The MIT License)
 
-Copyright (c) 2013 Néstor Coppi
+Copyright (c) 2016 Néstor Coppi
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

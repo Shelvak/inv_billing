@@ -122,6 +122,11 @@ class Helpers
       @_two_months_ago ||= today.advance(months: -2).to_s
     end
 
+    def months_ago(x)
+      @_months_ago ||= {}
+      @_months_ago[x] ||= today.advance(months: -x).to_s
+    end
+
     private
 
     def delete_innecesary_spaces(string)

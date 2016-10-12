@@ -2,9 +2,18 @@
 class DB
   class << self
     def init
+      tries = 3
+      begin
       $db_conn = PGconn.connect(
         dbname: 'Bodegas', user: 'postgres', password: 'postgres'
       )
+      rescue => e
+        if (tries -= 1) >= 0
+          sleep 1
+          retry
+        end
+        Helpers.log_error(e)
+      end
 
       tries = 3
 
@@ -18,10 +27,8 @@ class DB
           retry
         end
 
-        puts "error en bodegas 1"
         p e
         Helpers.log_error(e)
-        Helpers.log_error(e.backtrace.join("\n\t"))
       end
 
       $last_ids = {}
@@ -43,24 +50,27 @@ class DB
 
     def all_records_of(table)
       $db_bodegas.exec(
-        "SELECT idform FROM #{table} ORDER BY idform DESC LIMIT 1000;"
-      ).map { |r| r['idform'].to_i }
+        "SELECT idform FROM #{table} WHERE created_at >= '#{Helpers.months_ago(4)}';"
+      ).map { |r| r['idform'] }.map(&:to_i).uniq
     end
 
     def insert_ids_in(opts = {})
       table = opts[:table]
-      begin
-        ids_by_table = $db_bodegas.exec(
-          "SELECT idform FROM #{table};"
-        ).map { |r| r['idform'] }
-      rescue => e
-        Helpers.log_error(e)
-        ids_by_table = $last_ids[table]
-      end
+      #begin
+      #  ids_by_table = $db_bodegas.exec(
+      #    "SELECT idform FROM #{table};"
+      #  ).map { |r| r['idform'] }
+      #rescue => e
+      #  Helpers.log_error(e)
+      #  ids_by_table = $last_ids[table]
+      #end
 
-      ids_by_table = ids_by_table.map(&:to_i)
+      `echo "#{table}:" >> ids`
+      `echo "#{$last_ids[table].join(', ')}" >> ids`
 
-      ids = opts[:ids].map(&:to_i).map { |id| id unless id <= 0 || ids_by_table.include?(id) }.compact.uniq
+
+      ids = opts[:ids].map(&:to_i).map { |id| id unless id <= 0 }.compact.uniq
+      puts "saving #{ids}"
 
       ids.each do |id|
         begin
@@ -68,8 +78,6 @@ class DB
             Helpers.log_sql(sql)
             $db_bodegas.exec(sql)
         rescue => e
-          puts "error en bodegas 2"
-          p e
           Helpers.log_error(e)
         end
       end
