@@ -4,15 +4,13 @@ class MV02
   def self.generate
 
     ['mv02', 'mv02ch'].each do |mv|
-      old_owner = ''
+      query = 'SELECT idform, fecinicio, nrorem, nrorec, estadecla, lts_rem_t, lts_rem_p, lts_rec_t, lts_rec_p, '
+      query << "estadocu, numero, coddel, anoinv FROM #{mv}cab WHERE numero != '0' "
+      query << "AND fecinicio >= '#{Helpers.two_months_ago}' "
+      query << "AND idform NOT IN (#{$last_ids["#{mv}cab"].join(',')}) " if $last_ids["#{mv}cab"].any?
+      query << 'ORDER BY idform, nrorem, nrorec;'
 
-      Helpers.execute_sql(" SELECT idform, fecinicio, nrorem, nrorec, estadecla,
-        lts_rem_t, lts_rem_p, lts_rec_t, lts_rec_p,
-        estadocu, numero, coddel, anoinv FROM #{mv}cab
-        WHERE numero != '0'
-        AND fecinicio >= '#{Helpers.two_months_ago}'
-        AND idform NOT IN (#{$last_ids["#{mv}cab"].join(',')})
-        ORDER BY idform, nrorem, nrorec").each do |column|
+      Helpers.execute_sql(query).each do |column|
 
         owner_type = (column['estadocu'] == 'I') ? 'nrorem' : 'nrorec'
         owner = Helpers.execute_sql(
@@ -22,7 +20,6 @@ class MV02
         owner = owner ? owner['nombre'] : 'desconocido'
 
         Helpers.create_csv_for(owner, column[owner_type])
-        old_owner = owner
 
         volumen, propierty = if column['estadocu'] == 'I'
                                [

@@ -4,18 +4,15 @@ class Exportation
   def self.generate
     old_owner = ''
 
-    Helpers.execute_sql(
-      "SELECT idform, fecpre, paisdest, estdep, numero, coddel, anoinv FROM expcab1
-       WHERE numero != '0'
-       AND fecpre >= '#{Helpers.two_months_ago}'
-       AND idform NOT IN (#{$last_ids['expcab1'].join(',')})
-       ORDER BY idform, estdep, paisdest;"
-    ).each do |column|
+    query = 'SELECT idform, fecpre, paisdest, estdep, numero, coddel, anoinv FROM expcab1 '
+    query << "WHERE numero != '0' AND fecpre >= '#{Helpers.two_months_ago}' "
+    query << "AND idform NOT IN (#{$last_ids['expcab1'].join(',')}) " if $last_ids['expcab1'].any?
+    query << 'ORDER BY idform, estdep, paisdest;'
+    Helpers.execute_sql(query).each do |column|
 
 
       owner = Helpers.execute_sql(
-        "SELECT nombre FROM inscriptos
-        WHERE nroins = '#{column['estdep']}'"
+        "SELECT nombre FROM inscriptos WHERE nroins='#{column['estdep']}'"
       ).first
       owner = owner ? owner['nombre'] : 'desconocido'
 

@@ -5,14 +5,11 @@ class Frigorifico
     old_owner = ''
     ['mvfr', 'mvfrch'].each do |fr|
       puts "empieza #{fr}"
-      Helpers.execute_sql(
-        "SELECT  idform, fechapres, codform, tipo_movi, nroins, numero, coddel, anoinv, estadecla
-          FROM #{fr}cab
-          WHERE numero != '0'
-          AND fechapres >= '#{Helpers.two_months_ago}'
-          AND idform NOT IN (#{$last_ids[fr].join(',')})
-          ORDER BY nroins;"
-      ).each do |column|
+      query = 'SELECT  idform, fechapres, codform, tipo_movi, nroins, numero, coddel, anoinv, estadecla '
+      query << "FROM #{fr}cab WHERE numero != '0' AND fechapres >= '#{Helpers.two_months_ago}' "
+      query << "AND idform NOT IN (#{$last_ids[fr].join(',')}) " if $last_ids[fr].any?
+      query << "ORDER BY nroins;"
+      Helpers.execute_sql(query).each do |column|
 
         owner = Helpers.execute_sql(
           "SELECT nombre FROM inscriptos
@@ -30,10 +27,8 @@ class Frigorifico
             WHERE idform = #{column['idform']}"
         )
 
-        if query
-          if query.try(:first) && query.first['propiedad'].to_i == 2
-            propierty = 'Tercero'
-          end
+        if query && query.first
+          propierty = 'Tercero' if query.first['propiedad'].to_i == 2
 
           query.each { |d| volumen += d['litros'].to_i }
         end
@@ -50,10 +45,10 @@ class Frigorifico
 
         code_detail = CODIGOS["frigo-#{column['tipo_movi']}"]
         frigo_type = case column['codform'].to_i
-                     when 52 then '[Vino]'
-                     when 54 then '[Espumante]'
-                     else
-                       '----'
+                       when 52 then '[Vino]'
+                       when 54 then '[Espumante]'
+                       else
+                         '----'
                      end
 
         content_for_csv = [

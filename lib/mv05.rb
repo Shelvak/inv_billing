@@ -2,26 +2,20 @@
 
 class MV05
   def self.generate
-    old_owner = ''
 
     puts "empieza 05"
-    Helpers.execute_sql(
-      "SELECT idform, fecpre, tipo_movi, nroins, numero, coddel, anoinv, estadecla FROM mv05cab
-       WHERE numero != '0'
-       AND fecpre >= '#{Helpers.two_months_ago}'
-       AND idform NOT IN (#{$last_ids['mv05cab'].join(',')})
-       ORDER BY idform, nroins, tipo_movi;"
-    ).each do |column|
+    query = 'SELECT idform, fecpre, tipo_movi, nroins, numero, coddel, anoinv, estadecla FROM mv05cab '
+    query << "WHERE numero != '0' AND fecpre >= '#{Helpers.two_months_ago}' "
+    query << "AND idform NOT IN (#{$last_ids['mv05cab'].join(',')}) " if $last_ids['mv05cab'].any?
+    query << 'ORDER BY idform, nroins, tipo_movi;'
+    Helpers.execute_sql(query).each do |column|
 
       owner = Helpers.execute_sql(
-        "SELECT nombre FROM inscriptos
-         WHERE nroins = '#{column['nroins']}'"
+        "SELECT nombre FROM inscriptos WHERE nroins='#{column['nroins']}'"
       ).first
 
       owner = owner ? owner['nombre'] : 'desconocido'
-
       Helpers.create_csv_for(owner, column['nroins'])
-      old_owner = owner
 
       code = column['tipo_movi']
       code_detail = CODIGOS[code]

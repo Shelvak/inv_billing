@@ -4,6 +4,7 @@ Dir['viejas/*.csv'].each do |file|
   begin
     bad_file = CSV.open(file, 'r:ISO-8859-1').read
   rescue => e
+    Bugsnag.notify(e)
     puts file
     puts e
   end

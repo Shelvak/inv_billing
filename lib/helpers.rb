@@ -30,21 +30,25 @@ class Helpers
 
     def mkdir(dir)
       begin
-        Dir.mkdir dir
+        FileUtils.mkdir_p dir
       rescue => e
+        Bugsnag.notify(e)
         log_error e
       end
     end
 
     def log_error(error)
-      File.open('errores', 'a') do |f|
-        f.write("#{error}\n")
-      end
+      log('errores', error)
     end
 
     def log_sql(sql)
-      File.open('sql', 'a') do |f|
-        f.write("[#{Time.now}]  #{sql}\n")
+      log('sql', sql)
+    end
+
+    def log(name, msg)
+      file_name = "#{name}_#{Date.today.strftime('%m-%Y')}.txt"
+      File.open(file_name, 'a') do |f|
+        f.write("[#{now_to_s}]  #{msg}\n")
       end
     end
 
@@ -53,7 +57,9 @@ class Helpers
         log_sql(query)
         $db_conn.exec(query)
       rescue => e
+        Bugsnag.notify(e)
         log_error e
+        []
       end
     end
 
@@ -78,6 +84,11 @@ class Helpers
 
     def today_to_s
       @_today_to_s ||= today.strftime('%d-%m-%y')
+    end
+
+
+    def now_to_s
+      Time.now.strftime('%d-%m-%y %h:%M:%s')
     end
 
     def do_sum_in_all_files
