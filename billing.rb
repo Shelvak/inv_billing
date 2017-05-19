@@ -25,6 +25,8 @@ end
 begin
   ## Initializers
   DB.init
+  return unless $db_conn && $db_bodegas
+
   Helpers.create_month_dir
   DB.read_last_ids
 

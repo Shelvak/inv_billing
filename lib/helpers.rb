@@ -86,7 +86,6 @@ class Helpers
       @_today_to_s ||= today.strftime('%d-%m-%y')
     end
 
-
     def now_to_s
       Time.now.strftime('%d-%m-%y %h:%M:%s')
     end
@@ -96,26 +95,26 @@ class Helpers
         total_global = total_propio = total_tercero = 0
 
         csv_file = CSV.read(file)
-        rows_number = csv_file.size - 1
+        last_row_index = csv_file.size - 1
 
-        unless csv_file[rows_number][1].match(/Tercero =>/i)
+        next if csv_file[last_row_index].to_csv.match(/Tercero =>/i)
+        next if csv_file[last_row_index-1].to_csv.match(/Tercero =>/i) # weird case
 
-          csv_file.each do |csv|
-            total_global += csv[5].to_i
+        csv_file.each do |csv|
+          total_global += csv[5].to_i
 
-            if csv[6] =~ /\w+/i
-              total_tercero += csv[5].to_i
-            else
-              total_propio += csv[5].to_i
-            end
+          if csv[6] =~ /\w+/i
+            total_tercero += csv[5].to_i
+          else
+            total_propio += csv[5].to_i
           end
+        end
 
-          CSV.open(file, 'ab') do |csv|
-            csv << []
-            csv << [today_to_s, "Total => $ #{total_global}"]
-            csv << [today_to_s, "Propio => $ #{total_propio}"]
-            csv << [today_to_s, "Tercero => $ #{total_tercero}"]
-          end
+        CSV.open(file, 'ab') do |csv|
+          csv << []
+          csv << [today_to_s, "Total => $ #{total_global}"]
+          csv << [today_to_s, "Propio => $ #{total_propio}"]
+          csv << [today_to_s, "Tercero => $ #{total_tercero}"]
         end
       end
     end
